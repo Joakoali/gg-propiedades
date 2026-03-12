@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { FaWhatsapp, FaInstagram, FaFacebook } from "react-icons/fa";
 
 export default function Navbar() {
@@ -9,19 +10,19 @@ export default function Navbar() {
       </a>
       <ul className="flex gap-6 text-white font-medium">
         <li>
-          <a href="/" className="hover:text-gray-300 transition">
+          <Link href="/" className="hover:text-gray-300 transition">
             Inicio
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="/propiedades" className="hover:text-gray-300 transition">
+          <Link href="/propiedades" className="hover:text-gray-300 transition">
             Propiedades
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="/contacto" className="hover:text-gray-300 transition">
+          <Link href="/contacto" className="hover:text-gray-300 transition">
             Contacto
-          </a>
+          </Link>
         </li>
       </ul>
       <div className="flex gap-4 items-center text-white">
