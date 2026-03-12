@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Property{
+  id String @id @default(cuid())
+  slug String @unique
+  title String
+  price Float?
+  category Category
+  description String
+  images String[]
+  bedrooms Int?
+  coveredArea Int?
+  semiCoveredArea Int?
+  lotArea Int?
+  neighborhood String?
+  zone String?
+  pool Boolean @default(false)
+  financing Boolean @default(false)
+  mortgageEligible Boolean @default(false)
+  featured Boolean @default(false)
+  createdAt DateTime @default(now())
+}
+
+enum Category{
+  houses
+  lots
+  local
+}
