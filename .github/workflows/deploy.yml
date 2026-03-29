@@ -24,11 +24,6 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
-      - name: Generar Prisma Client
-        run: npx prisma generate
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
       - name: Build y Deploy
         run: npm run deploy
         env:
