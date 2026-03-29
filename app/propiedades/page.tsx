@@ -1,5 +1,5 @@
 export const runtime = "nodejs";
-import { prisma } from "@/app/lib/prisma";
+import { supabase, TABLE, type Property } from "@/app/lib/db";
 import { Suspense } from "react";
 type Category = "houses" | "lots" | "local";
 import { Home, ChevronLeft, ChevronRight } from "lucide-react";
@@ -47,49 +47,66 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
   } = await searchParams;
   const currentPage = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
 
-  const where: Record<string, unknown> = {};
-  if (category && ["houses", "lots", "local"].includes(category))
-    where.category = category as Category;
-  if (zone) where.zone = { contains: zone, mode: "insensitive" };
-  if (q) where.title = { contains: q, mode: "insensitive" };
-  const priceFilter: Record<string, number> = {};
-  if (minPrice) priceFilter.gte = parseFloat(minPrice);
-  if (maxPrice) priceFilter.lte = parseFloat(maxPrice);
-  if (Object.keys(priceFilter).length > 0) where.price = priceFilter;
-  if (minBedrooms) where.bedrooms = { gte: parseInt(minBedrooms) };
-  if (pool === "1") where.pool = true;
-  if (financing === "1") where.financing = true;
-  if (mortgageEligible === "1") where.mortgageEligible = true;
+  const db = supabase();
 
-  const orderBy =
-    sort === "price_asc"
-      ? [{ price: "asc" as const }]
-      : sort === "price_desc"
-        ? [{ price: "desc" as const }]
-        : sort === "bedrooms"
-          ? [{ bedrooms: "desc" as const }]
-          : [{ featured: "desc" as const }, { createdAt: "desc" as const }];
+  // ── Build the main query with filters ──
+  function applyFilters(query: ReturnType<typeof db.from>) {
+    let q2 = query;
+    if (category && ["houses", "lots", "local"].includes(category))
+      q2 = q2.eq("category", category as Category);
+    if (zone) q2 = q2.ilike("zone", `%${zone}%`);
+    if (q) q2 = q2.ilike("title", `%${q}%`);
+    if (minPrice) q2 = q2.gte("price", parseFloat(minPrice));
+    if (maxPrice) q2 = q2.lte("price", parseFloat(maxPrice));
+    if (minBedrooms) q2 = q2.gte("bedrooms", parseInt(minBedrooms));
+    if (pool === "1") q2 = q2.eq("pool", true);
+    if (financing === "1") q2 = q2.eq("financing", true);
+    if (mortgageEligible === "1") q2 = q2.eq("mortgageEligible", true);
+    return q2;
+  }
 
-  const [properties, totalCount, zones] = await Promise.all([
-    prisma.property.findMany({
-      where,
-      orderBy,
-      take: PAGE_SIZE,
-      skip: (currentPage - 1) * PAGE_SIZE,
-    }),
-    prisma.property.count({ where }),
-    prisma.property.findMany({
-      where: { zone: { not: null } },
-      select: { zone: true },
-      distinct: ["zone"],
-      orderBy: { zone: "asc" },
-    }),
+  // Apply sort
+  function applySort(query: ReturnType<typeof db.from>) {
+    if (sort === "price_asc") return query.order("price", { ascending: true, nullsFirst: false });
+    if (sort === "price_desc") return query.order("price", { ascending: false, nullsFirst: false });
+    if (sort === "bedrooms") return query.order("bedrooms", { ascending: false, nullsFirst: false });
+    return query
+      .order("featured", { ascending: false })
+      .order("createdAt", { ascending: false });
+  }
+
+  const from = (currentPage - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
+  // Run all three queries in parallel
+  const [propertiesRes, countRes, zonesRes] = await Promise.all([
+    applySort(
+      applyFilters(db.from(TABLE).select("*"))
+    ).range(from, to),
+
+    applyFilters(
+      db.from(TABLE).select("*", { count: "exact", head: true })
+    ),
+
+    db
+      .from(TABLE)
+      .select("zone")
+      .not("zone", "is", null)
+      .order("zone", { ascending: true }),
   ]);
 
+  const properties = (propertiesRes.data ?? []) as Property[];
+  const totalCount = countRes.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-  const zoneList = zones
-    .map((z: { zone: string | null }) => z.zone as string)
-    .filter(Boolean);
+
+  // Deduplicate zones
+  const zoneList = [
+    ...new Set(
+      (zonesRes.data ?? [])
+        .map((z: { zone: string | null }) => z.zone as string)
+        .filter(Boolean)
+    ),
+  ];
 
   // Build base URL for pagination links (preserve all current filters)
   const params = new URLSearchParams();

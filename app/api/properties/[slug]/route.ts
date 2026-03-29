@@ -1,5 +1,5 @@
 export const runtime = "nodejs";
-import { prisma } from "@/app/lib/prisma";
+import { supabase, TABLE } from "@/app/lib/db";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth-options";
@@ -45,12 +45,25 @@ export async function DELETE(_: Request, { params }: Params) {
   if (!session) return unauthorized();
 
   const { slug } = await params;
-  const property = await prisma.property.findUnique({ where: { slug } });
-  if (!property) {
+  const db = supabase();
+
+  // Check existence
+  const { data: existing } = await db
+    .from(TABLE)
+    .select("id")
+    .eq("slug", slug)
+    .single();
+
+  if (!existing) {
     return NextResponse.json({ error: "No encontrada" }, { status: 404 });
   }
 
-  await prisma.property.delete({ where: { slug } });
+  const { error } = await db.from(TABLE).delete().eq("slug", slug);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
   return NextResponse.json({ ok: true });
 }
 
@@ -73,36 +86,45 @@ export async function PUT(request: Request, { params }: Params) {
       ? body.images.filter(isValidImageUrl)
       : [];
 
-    const property = await prisma.property.update({
-      where: { slug },
-      data: {
-        ...(title && { title }),
-        price: body.price
-          ? Math.max(0, parseFloat(body.price) || 0) || null
+    const updateData: Record<string, unknown> = {
+      price: body.price
+        ? Math.max(0, parseFloat(body.price) || 0) || null
+        : null,
+      description:
+        typeof body.description === "string"
+          ? body.description.slice(0, 10000)
+          : "",
+      images,
+      bedrooms: safeInt(body.bedrooms, 0, 50),
+      coveredArea: safeInt(body.coveredArea),
+      semiCoveredArea: safeInt(body.semiCoveredArea),
+      lotArea: safeInt(body.lotArea),
+      neighborhood:
+        typeof body.neighborhood === "string"
+          ? body.neighborhood.slice(0, 100)
           : null,
-        ...(category && { category }),
-        description:
-          typeof body.description === "string"
-            ? body.description.slice(0, 10000)
-            : "",
-        images,
-        bedrooms: safeInt(body.bedrooms, 0, 50),
-        coveredArea: safeInt(body.coveredArea),
-        semiCoveredArea: safeInt(body.semiCoveredArea),
-        lotArea: safeInt(body.lotArea),
-        neighborhood:
-          typeof body.neighborhood === "string"
-            ? body.neighborhood.slice(0, 100)
-            : null,
-        zone: typeof body.zone === "string" ? body.zone.slice(0, 100) : null,
-        pool: body.pool === true,
-        financing: body.financing === true,
-        mortgageEligible: body.mortgageEligible === true,
-        featured: body.featured === true,
-      },
-    });
+      zone: typeof body.zone === "string" ? body.zone.slice(0, 100) : null,
+      pool: body.pool === true,
+      financing: body.financing === true,
+      mortgageEligible: body.mortgageEligible === true,
+      featured: body.featured === true,
+    };
 
-    return NextResponse.json(property);
+    if (title) updateData.title = title;
+    if (category) updateData.category = category;
+
+    const { data, error } = await supabase()
+      .from(TABLE)
+      .update(updateData)
+      .eq("slug", slug)
+      .select()
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(data);
   } catch {
     return NextResponse.json({ error: "Error al actualizar" }, { status: 500 });
   }

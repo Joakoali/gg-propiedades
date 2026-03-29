@@ -1,34 +1,42 @@
 "use server";
 export const runtime = "nodejs";
-import { prisma } from "@/app/lib/prisma";
+import { supabase, TABLE } from "@/app/lib/db";
 import { revalidatePath } from "next/cache";
 import { MAX_FEATURED } from "@/app/lib/utils";
 
 export async function toggleFeatured(id: string, currentFeatured: boolean) {
-  // Si lo queremos marcar como destacado, verificar el límite con transacción atómica
+  const db = supabase();
+
+  // Si lo queremos marcar como destacado, verificar el límite
   if (!currentFeatured) {
     try {
-      await prisma.$transaction(async (tx) => {
-        const count = await tx.property.count({ where: { featured: true } });
-        if (count >= MAX_FEATURED) {
-          throw new Error(`LIMIT:${MAX_FEATURED}`);
-        }
-        await tx.property.update({ where: { id }, data: { featured: true } });
-      });
-    } catch (e) {
-      const msg = (e as Error).message;
-      if (msg.startsWith("LIMIT:")) {
+      const { count } = await db
+        .from(TABLE)
+        .select("*", { count: "exact", head: true })
+        .eq("featured", true);
+
+      if ((count ?? 0) >= MAX_FEATURED) {
         return {
           error: `Límite alcanzado: solo podés tener ${MAX_FEATURED} propiedades destacadas.`,
         };
       }
+
+      const { error } = await db
+        .from(TABLE)
+        .update({ featured: true })
+        .eq("id", id);
+
+      if (error) return { error: "Error al actualizar." };
+    } catch {
       return { error: "Error al actualizar." };
     }
   } else {
-    await prisma.property.update({
-      where: { id },
-      data: { featured: false },
-    });
+    const { error } = await db
+      .from(TABLE)
+      .update({ featured: false })
+      .eq("id", id);
+
+    if (error) return { error: "Error al actualizar." };
   }
 
   revalidatePath("/");

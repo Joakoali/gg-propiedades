@@ -5,7 +5,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, BedDouble, Ruler, Trees, MapPin, Star } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
-import { prisma } from "@/app/lib/prisma";
+import { supabase, TABLE, type Property } from "@/app/lib/db";
 import { formatPrice, CATEGORY_LABELS } from "@/app/lib/utils";
 import Gallery from "./Gallery";
 import ShareButton from "./ShareButton";
@@ -14,17 +14,22 @@ export const revalidate = 3600; // Re-generar cada 1 hora
 
 // Pre-genera las páginas de propiedades destacadas en build time
 export async function generateStaticParams() {
-  const properties = await prisma.property.findMany({
-    select: { slug: true },
-    where: { featured: true },
-    take: 12,
-  });
-  return properties.map((p) => ({ slug: p.slug }));
+  const { data } = await supabase()
+    .from(TABLE)
+    .select("slug")
+    .eq("featured", true)
+    .limit(12);
+  return (data ?? []).map((p) => ({ slug: p.slug }));
 }
 
 // React.cache() deduplicates the DB call between generateMetadata and the page
-const getProperty = cache(async (slug: string) => {
-  return prisma.property.findUnique({ where: { slug } });
+const getProperty = cache(async (slug: string): Promise<Property | null> => {
+  const { data } = await supabase()
+    .from(TABLE)
+    .select("*")
+    .eq("slug", slug)
+    .single();
+  return data as Property | null;
 });
 
 type Props = { params: Promise<{ slug: string }> };

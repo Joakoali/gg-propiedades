@@ -1,6 +1,6 @@
 export const runtime = "nodejs";
 import Link from "next/link";
-import { prisma } from "@/app/lib/prisma";
+import { supabase, TABLE, type Property } from "@/app/lib/db";
 import HeroCarousel from "@/app/components/HeroCarousel";
 import PropertyCard from "@/app/components/PropertyCard";
 import { ZONES } from "@/app/lib/utils";
@@ -31,27 +31,24 @@ interface FeaturedPropertyCard {
 // ── Data fetching (Server Component — sin waterfalls, Promise.all) ─────────────
 
 async function getHomeData() {
-  const [featured, stats] = await Promise.all([
-    prisma.property.findMany({
-      where: { featured: true },
-      orderBy: { createdAt: "desc" },
-      take: 9,
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        price: true,
-        images: true,
-        neighborhood: true,
-        zone: true,
-        bedrooms: true,
-        coveredArea: true,
-        category: true,
-      },
-    }),
-    prisma.property.aggregate({ _count: { id: true } }),
+  const db = supabase();
+
+  const [featuredRes, countRes] = await Promise.all([
+    db
+      .from(TABLE)
+      .select("id, slug, title, price, images, neighborhood, zone, bedrooms, coveredArea, category")
+      .eq("featured", true)
+      .order("createdAt", { ascending: false })
+      .limit(9),
+    db
+      .from(TABLE)
+      .select("*", { count: "exact", head: true }),
   ]);
-  return { featured, totalProperties: stats._count.id };
+
+  const featured = (featuredRes.data ?? []) as FeaturedPropertyCard[];
+  const totalProperties = countRes.count ?? 0;
+
+  return { featured, totalProperties };
 }
 
 // ── Constantes estáticas ──────────────────────────────────────────────────────
@@ -324,38 +321,4 @@ export default async function HomePage() {
         }}
         className="py-8"
       >
-        <div className="section-container flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <span className="font-display font-black text-xl text-white">
-              GG
-            </span>
-            <span
-              className="font-sans text-[10px] font-bold tracking-[0.22em] uppercase"
-              style={{ color: "var(--color-gold)" }}
-            >
-              Propiedades
-            </span>
-          </div>
-          <p className="text-white/25 text-xs text-center">
-            © {new Date().getFullYear()} GG Propiedades · CMCPSI 6583 · Zona
-            Norte GBA
-          </p>
-          <div className="flex gap-1">
-            {[
-              { label: "Propiedades", href: "/propiedades" },
-              { label: "Contacto", href: "/contacto" },
-            ].map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="text-white/35 hover:text-white/70 text-xs transition-colors px-2"
-              >
-                {l.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </footer>
-    </main>
-  );
-}
+        
