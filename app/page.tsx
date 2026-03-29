@@ -1,5 +1,6 @@
 export const runtime = "nodejs";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { supabase, TABLE, type Property } from "@/app/lib/db";
 import HeroCarousel from "@/app/components/HeroCarousel";
 import PropertyCard from "@/app/components/PropertyCard";
@@ -36,13 +37,13 @@ async function getHomeData() {
   const [featuredRes, countRes] = await Promise.all([
     db
       .from(TABLE)
-      .select("id, slug, title, price, images, neighborhood, zone, bedrooms, coveredArea, category")
+      .select(
+        "id, slug, title, price, images, neighborhood, zone, bedrooms, coveredArea, category",
+      )
       .eq("featured", true)
       .order("createdAt", { ascending: false })
       .limit(9),
-    db
-      .from(TABLE)
-      .select("*", { count: "exact", head: true }),
+    db.from(TABLE).select("*", { count: "exact", head: true }),
   ]);
 
   const featured = (featuredRes.data ?? []) as FeaturedPropertyCard[];
@@ -239,7 +240,7 @@ export default async function HomePage() {
         <div className="section-container">
           <div
             className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x"
-            style={{ "--tw-divide-opacity": 1 } as React.CSSProperties}
+            style={{ "--tw-divide-opacity": 1 } as CSSProperties}
           >
             {STATS.map(({ value, label }) => (
               <div
@@ -321,4 +322,7 @@ export default async function HomePage() {
         }}
         className="py-8"
       >
-        
+      </footer>
+    </main>
+  );
+}

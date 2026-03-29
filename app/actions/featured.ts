@@ -1,5 +1,4 @@
 "use server";
-export const runtime = "nodejs";
 import { supabase, TABLE } from "@/app/lib/db";
 import { revalidatePath } from "next/cache";
 import { MAX_FEATURED } from "@/app/lib/utils";
