@@ -27,16 +27,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Páginas dinámicas: una por cada propiedad
-  const properties = await prisma.property.findMany({
-    select: { slug: true, createdAt: true },
-  });
+  if (!process.env.DATABASE_URL) return staticPages;
 
-  const propertyPages: MetadataRoute.Sitemap = properties.map((p) => ({
-    url: `${BASE_URL}/propiedades/${p.slug}`,
-    lastModified: p.createdAt,
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
+  try {
+    const properties = await prisma.property.findMany({
+      select: { slug: true, createdAt: true },
+    });
 
-  return [...staticPages, ...propertyPages];
+    const propertyPages: MetadataRoute.Sitemap = properties.map((p) => ({
+      url: `${BASE_URL}/propiedades/${p.slug}`,
+      lastModified: p.createdAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
+
+    return [...staticPages, ...propertyPages];
+  } catch {
+    return staticPages;
+  }
 }

@@ -1,5 +1,4 @@
 "use server";
-export const runtime = "nodejs";
 import { prisma } from "@/app/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { MAX_FEATURED } from "@/app/lib/utils";

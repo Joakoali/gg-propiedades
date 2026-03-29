@@ -1,4 +1,5 @@
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
 import HeroCarousel from "@/app/components/HeroCarousel";

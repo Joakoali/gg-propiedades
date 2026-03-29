@@ -14,12 +14,17 @@ export const revalidate = 3600; // Re-generar cada 1 hora
 
 // Pre-genera las páginas de propiedades destacadas en build time
 export async function generateStaticParams() {
-  const properties = await prisma.property.findMany({
-    select: { slug: true },
-    where: { featured: true },
-    take: 12,
-  });
-  return properties.map((p) => ({ slug: p.slug }));
+  if (!process.env.DATABASE_URL) return [];
+  try {
+    const properties = await prisma.property.findMany({
+      select: { slug: true },
+      where: { featured: true },
+      take: 12,
+    });
+    return properties.map((p) => ({ slug: p.slug }));
+  } catch {
+    return [];
+  }
 }
 
 // React.cache() deduplicates the DB call between generateMetadata and the page
