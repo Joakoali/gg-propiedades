@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 import { prisma } from "@/app/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
@@ -18,7 +19,12 @@ function isValidImageUrl(url: unknown): boolean {
   if (typeof url !== "string") return false;
   try {
     const parsed = new URL(url);
-    return parsed.protocol === "https:" && ALLOWED_IMAGE_HOSTS.some((h) => parsed.hostname === h || parsed.hostname.endsWith(`.${h}`));
+    return (
+      parsed.protocol === "https:" &&
+      ALLOWED_IMAGE_HOSTS.some(
+        (h) => parsed.hostname === h || parsed.hostname.endsWith(`.${h}`),
+      )
+    );
   } catch {
     return false;
   }
@@ -49,13 +55,24 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    if (!body.title || typeof body.title !== "string" || body.title.trim().length < 3) {
-      return NextResponse.json({ error: "Título requerido (mín. 3 caracteres)" }, { status: 400 });
+    if (
+      !body.title ||
+      typeof body.title !== "string" ||
+      body.title.trim().length < 3
+    ) {
+      return NextResponse.json(
+        { error: "Título requerido (mín. 3 caracteres)" },
+        { status: 400 },
+      );
     }
 
     const title = body.title.trim().slice(0, 200);
-    const category = VALID_CATEGORIES.includes(body.category) ? body.category : "houses";
-    const images = Array.isArray(body.images) ? body.images.filter(isValidImageUrl) : [];
+    const category = VALID_CATEGORIES.includes(body.category)
+      ? body.category
+      : "houses";
+    const images = Array.isArray(body.images)
+      ? body.images.filter(isValidImageUrl)
+      : [];
 
     const property = await prisma.property.create({
       data: {
@@ -64,15 +81,23 @@ export async function POST(request: Request) {
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/(^-|-$)/g, ""),
         title,
-        price: body.price ? Math.max(0, parseFloat(body.price) || 0) || null : null,
+        price: body.price
+          ? Math.max(0, parseFloat(body.price) || 0) || null
+          : null,
         category,
-        description: typeof body.description === "string" ? body.description.slice(0, 10000) : "",
+        description:
+          typeof body.description === "string"
+            ? body.description.slice(0, 10000)
+            : "",
         images,
         bedrooms: safeInt(body.bedrooms, 0, 50),
         coveredArea: safeInt(body.coveredArea),
         semiCoveredArea: safeInt(body.semiCoveredArea),
         lotArea: safeInt(body.lotArea),
-        neighborhood: typeof body.neighborhood === "string" ? body.neighborhood.slice(0, 100) : null,
+        neighborhood:
+          typeof body.neighborhood === "string"
+            ? body.neighborhood.slice(0, 100)
+            : null,
         zone: typeof body.zone === "string" ? body.zone.slice(0, 100) : null,
         pool: body.pool === true,
         financing: body.financing === true,
@@ -82,6 +107,9 @@ export async function POST(request: Request) {
     });
     return NextResponse.json(property);
   } catch {
-    return NextResponse.json({ error: "Error al crear propiedad" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Error al crear propiedad" },
+      { status: 500 },
+    );
   }
 }

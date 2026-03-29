@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 import { prisma } from "@/app/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
@@ -20,7 +21,12 @@ function isValidImageUrl(url: unknown): boolean {
   if (typeof url !== "string") return false;
   try {
     const parsed = new URL(url);
-    return parsed.protocol === "https:" && ALLOWED_IMAGE_HOSTS.some((h) => parsed.hostname === h || parsed.hostname.endsWith(`.${h}`));
+    return (
+      parsed.protocol === "https:" &&
+      ALLOWED_IMAGE_HOSTS.some(
+        (h) => parsed.hostname === h || parsed.hostname.endsWith(`.${h}`),
+      )
+    );
   } catch {
     return false;
   }
@@ -56,23 +62,38 @@ export async function PUT(request: Request, { params }: Params) {
     const { slug } = await params;
     const body = await request.json();
 
-    const title = typeof body.title === "string" ? body.title.trim().slice(0, 200) : undefined;
-    const category = VALID_CATEGORIES.includes(body.category) ? body.category : undefined;
-    const images = Array.isArray(body.images) ? body.images.filter(isValidImageUrl) : [];
+    const title =
+      typeof body.title === "string"
+        ? body.title.trim().slice(0, 200)
+        : undefined;
+    const category = VALID_CATEGORIES.includes(body.category)
+      ? body.category
+      : undefined;
+    const images = Array.isArray(body.images)
+      ? body.images.filter(isValidImageUrl)
+      : [];
 
     const property = await prisma.property.update({
       where: { slug },
       data: {
         ...(title && { title }),
-        price: body.price ? Math.max(0, parseFloat(body.price) || 0) || null : null,
+        price: body.price
+          ? Math.max(0, parseFloat(body.price) || 0) || null
+          : null,
         ...(category && { category }),
-        description: typeof body.description === "string" ? body.description.slice(0, 10000) : "",
+        description:
+          typeof body.description === "string"
+            ? body.description.slice(0, 10000)
+            : "",
         images,
         bedrooms: safeInt(body.bedrooms, 0, 50),
         coveredArea: safeInt(body.coveredArea),
         semiCoveredArea: safeInt(body.semiCoveredArea),
         lotArea: safeInt(body.lotArea),
-        neighborhood: typeof body.neighborhood === "string" ? body.neighborhood.slice(0, 100) : null,
+        neighborhood:
+          typeof body.neighborhood === "string"
+            ? body.neighborhood.slice(0, 100)
+            : null,
         zone: typeof body.zone === "string" ? body.zone.slice(0, 100) : null,
         pool: body.pool === true,
         financing: body.financing === true,
