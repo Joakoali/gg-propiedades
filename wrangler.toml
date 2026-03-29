@@ -1,0 +1,25 @@
+#:schema node_modules/wrangler/config-schema.json
+
+name = "gg-propiedades"
+main = ".open-next/worker.js"
+compatibility_date = "2025-04-01"
+compatibility_flags = ["nodejs_compat"]
+
+# ── Variables no sensibles (públicas) ───────────────────────────────────────
+[vars]
+NEXTAUTH_URL = "https://ggpropiedades.com"
+R2_PUBLIC_URL = "https://pub-bd2ec60177e8464ab87d64b45deb3958.r2.dev"
+
+# ── Secrets sensibles (configurar con: npx wrangler secret put <NOMBRE>) ────
+# DATABASE_URL
+# NEXTAUTH_SECRET
+# ADMIN_USERNAME
+# ADMIN_PASSWORD
+# R2_ACCOUNT_ID
+# R2_ACCESS_KEY_ID
+# R2_SECRET_ACCESS_KEY
+
+# ── Assets (HTML, CSS, JS estáticos) ────────────────────────────────────────
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"

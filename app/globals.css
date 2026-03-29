@@ -1,5 +1,158 @@
 @import "tailwindcss";
-body {
-  background-color: white;
-  color: black;
+
+/* ─────────────────────────────────────────────
+   GG Propiedades — Design System (Tailwind v4)
+   Paleta: Negro / Blanco + Dorado arena
+───────────────────────────────────────────── */
+
+@theme {
+  /* ── Fuentes ── */
+  --font-sans:    var(--font-geist-sans), system-ui, sans-serif;
+  --font-display: var(--font-playfair), Georgia, serif;
+
+  /* ── Colores base (OKLCH) ── */
+  --color-background:          oklch(100% 0 0);
+  --color-foreground:          oklch(10% 0.01 260);
+  --color-card:                oklch(100% 0 0);
+  --color-card-foreground:     oklch(10% 0.01 260);
+  --color-muted:               oklch(96.5% 0.004 260);
+  --color-muted-foreground:    oklch(50% 0.015 260);
+  --color-border:              oklch(91% 0.005 260);
+
+  /* ── Acento dorado arena ── */
+  --color-gold:       oklch(72% 0.12 75);
+  --color-gold-light: oklch(90% 0.07 75);
+  --color-gold-dark:  oklch(55% 0.12 75);
+
+  /* ── Primario (negro elegante) ── */
+  --color-primary:             oklch(10% 0.01 260);
+  --color-primary-hover:       oklch(22% 0.01 260);
+  --color-primary-foreground:  oklch(98% 0 0);
+
+  /* ── Ring ── */
+  --color-ring: oklch(72% 0.12 75);
+
+  /* ── Radios ── */
+  --radius-sm:  0.25rem;
+  --radius-md:  0.5rem;
+  --radius-lg:  0.75rem;
+  --radius-xl:  1rem;
+  --radius-2xl: 1.5rem;
+
+  /* ── Animaciones ── */
+  --animate-fade-in:  fade-in 0.35s ease-out;
+  --animate-slide-up: slide-up 0.4s ease-out;
+  --animate-slide-down: slide-down 0.3s ease-out;
+  --animate-scale-in: scale-in 0.25s ease-out;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(1.25rem); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slide-down {
+    from { opacity: 0; transform: translateY(-0.5rem); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+}
+
+/* ── Utilidades custom ── */
+@utility section-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+@utility text-gradient-gold {
+  background: linear-gradient(135deg, oklch(72% 0.12 75), oklch(55% 0.12 75));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@utility card-shadow {
+  box-shadow: 0 1px 3px oklch(10% 0 0 / 0.07), 0 4px 14px oklch(10% 0 0 / 0.05);
+}
+
+@utility card-shadow-hover {
+  box-shadow: 0 4px 16px oklch(10% 0 0 / 0.12), 0 8px 32px oklch(10% 0 0 / 0.08);
+}
+
+/* ── Skeleton shimmer para imágenes cargando ── */
+@utility img-skeleton {
+  background: linear-gradient(
+    90deg,
+    oklch(93% 0 0) 25%,
+    oklch(97% 0 0) 50%,
+    oklch(93% 0 0) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Base styles ── */
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(80% 0.005 260);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(65% 0.005 260);
+  }
+}
+
+/* ── Print styles ─────────────────────────────────────────────────────────── */
+@media print {
+  /* Ocultar navegación, botones, formularios */
+  header, nav, footer, button, [role="button"],
+  form, .print-hide { display: none !important; }
+
+  body { background: white !important; color: black !important; }
+
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3 { page-break-after: avoid; }
+  p { orphans: 3; widows: 3; }
+
+  a { color: inherit !important; text-decoration: none !important; }
+  a[href]::after { content: none !important; }
+
+  .card-shadow, .card-shadow-hover { box-shadow: none !important; }
 }

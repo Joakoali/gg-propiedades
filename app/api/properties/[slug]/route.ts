@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth-options";
 
+type Params = { params: Promise<{ slug: string }> };
+
 function unauthorized() {
   return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 }
@@ -24,7 +26,6 @@ function isValidImageUrl(url: unknown): boolean {
   }
 }
 
-/** Parse int with bounds checking */
 function safeInt(val: unknown, min = 0, max = 999999): number | null {
   if (val == null || val === "") return null;
   const n = parseInt(String(val), 10);
@@ -33,39 +34,38 @@ function safeInt(val: unknown, min = 0, max = 999999): number | null {
 
 const VALID_CATEGORIES = ["houses", "lots", "local"] as const;
 
-export async function GET() {
+export async function DELETE(_: Request, { params }: Params) {
   const session = await getServerSession(authOptions);
   if (!session) return unauthorized();
 
-  const properties = await prisma.property.findMany({
-    orderBy: { createdAt: "desc" },
-  });
-  return NextResponse.json(properties);
+  const { slug } = await params;
+  const property = await prisma.property.findUnique({ where: { slug } });
+  if (!property) {
+    return NextResponse.json({ error: "No encontrada" }, { status: 404 });
+  }
+
+  await prisma.property.delete({ where: { slug } });
+  return NextResponse.json({ ok: true });
 }
 
-export async function POST(request: Request) {
+export async function PUT(request: Request, { params }: Params) {
   const session = await getServerSession(authOptions);
   if (!session) return unauthorized();
 
   try {
+    const { slug } = await params;
     const body = await request.json();
-    if (!body.title || typeof body.title !== "string" || body.title.trim().length < 3) {
-      return NextResponse.json({ error: "Título requerido (mín. 3 caracteres)" }, { status: 400 });
-    }
 
-    const title = body.title.trim().slice(0, 200);
-    const category = VALID_CATEGORIES.includes(body.category) ? body.category : "houses";
+    const title = typeof body.title === "string" ? body.title.trim().slice(0, 200) : undefined;
+    const category = VALID_CATEGORIES.includes(body.category) ? body.category : undefined;
     const images = Array.isArray(body.images) ? body.images.filter(isValidImageUrl) : [];
 
-    const property = await prisma.property.create({
+    const property = await prisma.property.update({
+      where: { slug },
       data: {
-        slug: title
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/(^-|-$)/g, ""),
-        title,
+        ...(title && { title }),
         price: body.price ? Math.max(0, parseFloat(body.price) || 0) || null : null,
-        category,
+        ...(category && { category }),
         description: typeof body.description === "string" ? body.description.slice(0, 10000) : "",
         images,
         bedrooms: safeInt(body.bedrooms, 0, 50),
@@ -80,8 +80,9 @@ export async function POST(request: Request) {
         featured: body.featured === true,
       },
     });
+
     return NextResponse.json(property);
   } catch {
-    return NextResponse.json({ error: "Error al crear propiedad" }, { status: 500 });
+    return NextResponse.json({ error: "Error al actualizar" }, { status: 500 });
   }
 }
