@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
@@ -33,7 +34,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const property = await getProperty(slug);
   if (!property) return {};
 
-  const location = [property.neighborhood, property.zone].filter(Boolean).join(", ");
+  const location = [property.neighborhood, property.zone]
+    .filter(Boolean)
+    .join(", ");
   const desc = property.description.slice(0, 155).replace(/\s+/g, " ").trim();
   const title = property.title;
   const url = `https://ggpropiedades.com/propiedades/${slug}`;
@@ -50,7 +53,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "article",
       locale: "es_AR",
       siteName: "GG Propiedades",
-      ...(image && { images: [{ url: image, width: 1200, height: 630, alt: title }] }),
+      ...(image && {
+        images: [{ url: image, width: 1200, height: 630, alt: title }],
+      }),
     },
     twitter: {
       card: "summary_large_image",
@@ -75,7 +80,8 @@ export default async function PropertyDetailPage({ params }: Props) {
     .join(" · ");
 
   const price = formatPrice(property.price);
-  const hasFeatures = property.pool || property.financing || property.mortgageEligible;
+  const hasFeatures =
+    property.pool || property.financing || property.mortgageEligible;
 
   // JSON-LD: Google Rich Results para inmuebles
   const jsonLd = {
@@ -114,8 +120,18 @@ export default async function PropertyDetailPage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: "https://ggpropiedades.com" },
-      { "@type": "ListItem", position: 2, name: "Propiedades", item: "https://ggpropiedades.com/propiedades" },
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Inicio",
+        item: "https://ggpropiedades.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Propiedades",
+        item: "https://ggpropiedades.com/propiedades",
+      },
       { "@type": "ListItem", position: 3, name: property.title },
     ],
   };
@@ -138,7 +154,11 @@ export default async function PropertyDetailPage({ params }: Props) {
       >
         <div
           className="absolute inset-0 opacity-[0.06]"
-          style={{ backgroundImage: "url('/hero.jpg')", backgroundSize: "cover", backgroundPosition: "center" }}
+          style={{
+            backgroundImage: "url('/hero.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
         />
         <div className="section-container relative z-10">
           <div className="flex items-center justify-between mb-4">
@@ -154,12 +174,24 @@ export default async function PropertyDetailPage({ params }: Props) {
           </div>
 
           {/* Breadcrumbs */}
-          <nav className="text-white/50 text-xs flex items-center gap-1.5 mb-3" aria-label="Breadcrumb">
-            <Link href="/" className="hover:text-white transition-colors">Inicio</Link>
+          <nav
+            className="text-white/50 text-xs flex items-center gap-1.5 mb-3"
+            aria-label="Breadcrumb"
+          >
+            <Link href="/" className="hover:text-white transition-colors">
+              Inicio
+            </Link>
             <span>/</span>
-            <Link href="/propiedades" className="hover:text-white transition-colors">Propiedades</Link>
+            <Link
+              href="/propiedades"
+              className="hover:text-white transition-colors"
+            >
+              Propiedades
+            </Link>
             <span>/</span>
-            <span className="text-white/70 truncate max-w-[200px] lg:max-w-xs">{property.title}</span>
+            <span className="text-white/70 truncate max-w-[200px] lg:max-w-xs">
+              {property.title}
+            </span>
           </nav>
           <div className="flex flex-wrap items-center gap-2">
             {property.featured && (
@@ -188,14 +220,18 @@ export default async function PropertyDetailPage({ params }: Props) {
       {/* ── Main content ── */}
       <div className="section-container py-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
           {/* Left: gallery + description */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             <Gallery images={property.images} title={property.title} />
 
             <div className="bg-white rounded-2xl p-6 card-shadow">
-              <h2 className="font-display text-lg font-bold mb-3">Descripción</h2>
-              <p className="leading-relaxed whitespace-pre-line text-sm" style={{ color: "var(--color-muted-foreground)" }}>
+              <h2 className="font-display text-lg font-bold mb-3">
+                Descripción
+              </h2>
+              <p
+                className="leading-relaxed whitespace-pre-line text-sm"
+                style={{ color: "var(--color-muted-foreground)" }}
+              >
                 {property.description}
               </p>
             </div>
@@ -203,43 +239,65 @@ export default async function PropertyDetailPage({ params }: Props) {
 
           {/* Right: info */}
           <div className="flex flex-col gap-5">
-
             {/* Price + stats card */}
             <div className="bg-white rounded-2xl p-6 card-shadow flex flex-col gap-5">
-
               {/* Price */}
               <div>
                 {price ? (
                   <p className="font-display text-3xl font-bold">{price}</p>
                 ) : (
-                  <p className="text-sm italic" style={{ color: "var(--color-muted-foreground)" }}>
+                  <p
+                    className="text-sm italic"
+                    style={{ color: "var(--color-muted-foreground)" }}
+                  >
                     Consultar precio
                   </p>
                 )}
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-1 gap-3 text-sm border-t pt-5" style={{ borderColor: "var(--color-border)" }}>
+              <div
+                className="grid grid-cols-1 gap-3 text-sm border-t pt-5"
+                style={{ borderColor: "var(--color-border)" }}
+              >
                 {property.bedrooms != null && (
-                  <div className="flex items-center gap-2.5" style={{ color: "var(--color-muted-foreground)" }}>
-                    <BedDouble size={16} style={{ color: "var(--color-gold)" }} />
-                    <span>{property.bedrooms} dormitorio{property.bedrooms !== 1 ? "s" : ""}</span>
+                  <div
+                    className="flex items-center gap-2.5"
+                    style={{ color: "var(--color-muted-foreground)" }}
+                  >
+                    <BedDouble
+                      size={16}
+                      style={{ color: "var(--color-gold)" }}
+                    />
+                    <span>
+                      {property.bedrooms} dormitorio
+                      {property.bedrooms !== 1 ? "s" : ""}
+                    </span>
                   </div>
                 )}
                 {property.coveredArea != null && (
-                  <div className="flex items-center gap-2.5" style={{ color: "var(--color-muted-foreground)" }}>
+                  <div
+                    className="flex items-center gap-2.5"
+                    style={{ color: "var(--color-muted-foreground)" }}
+                  >
                     <Ruler size={16} style={{ color: "var(--color-gold)" }} />
                     <span>{property.coveredArea} m² cubiertos</span>
                   </div>
                 )}
                 {property.semiCoveredArea != null && (
-                  <div className="flex items-center gap-2.5" style={{ color: "var(--color-muted-foreground)" }}>
+                  <div
+                    className="flex items-center gap-2.5"
+                    style={{ color: "var(--color-muted-foreground)" }}
+                  >
                     <Ruler size={16} style={{ color: "var(--color-gold)" }} />
                     <span>{property.semiCoveredArea} m² semicubiertos</span>
                   </div>
                 )}
                 {property.lotArea != null && (
-                  <div className="flex items-center gap-2.5" style={{ color: "var(--color-muted-foreground)" }}>
+                  <div
+                    className="flex items-center gap-2.5"
+                    style={{ color: "var(--color-muted-foreground)" }}
+                  >
                     <Trees size={16} style={{ color: "var(--color-gold)" }} />
                     <span>{property.lotArea} m² de lote</span>
                   </div>
@@ -248,15 +306,24 @@ export default async function PropertyDetailPage({ params }: Props) {
 
               {/* Feature tags */}
               {hasFeatures && (
-                <div className="flex flex-wrap gap-2 border-t pt-4" style={{ borderColor: "var(--color-border)" }}>
+                <div
+                  className="flex flex-wrap gap-2 border-t pt-4"
+                  style={{ borderColor: "var(--color-border)" }}
+                >
                   {property.pool && (
-                    <span className="px-2.5 py-1 rounded-full text-xs bg-blue-50 text-blue-700">Pileta</span>
+                    <span className="px-2.5 py-1 rounded-full text-xs bg-blue-50 text-blue-700">
+                      Pileta
+                    </span>
                   )}
                   {property.financing && (
-                    <span className="px-2.5 py-1 rounded-full text-xs bg-green-50 text-green-700">Financiación</span>
+                    <span className="px-2.5 py-1 rounded-full text-xs bg-green-50 text-green-700">
+                      Financiación
+                    </span>
                   )}
                   {property.mortgageEligible && (
-                    <span className="px-2.5 py-1 rounded-full text-xs bg-purple-50 text-purple-700">Apto crédito</span>
+                    <span className="px-2.5 py-1 rounded-full text-xs bg-purple-50 text-purple-700">
+                      Apto crédito
+                    </span>
                   )}
                 </div>
               )}

@@ -1,11 +1,16 @@
+export const runtime = "nodejs";
 import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
 import HeroCarousel from "@/app/components/HeroCarousel";
 import PropertyCard from "@/app/components/PropertyCard";
 import { ZONES } from "@/app/lib/utils";
 import {
-  ShieldCheck, Search, Calculator, ArrowRight,
-  Phone, MapPin,
+  ShieldCheck,
+  Search,
+  Calculator,
+  ArrowRight,
+  Phone,
+  MapPin,
 } from "lucide-react";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────────
@@ -32,8 +37,16 @@ async function getHomeData() {
       orderBy: { createdAt: "desc" },
       take: 9,
       select: {
-        id: true, slug: true, title: true, price: true, images: true,
-        neighborhood: true, zone: true, bedrooms: true, coveredArea: true, category: true,
+        id: true,
+        slug: true,
+        title: true,
+        price: true,
+        images: true,
+        neighborhood: true,
+        zone: true,
+        bedrooms: true,
+        coveredArea: true,
+        category: true,
       },
     }),
     prisma.property.aggregate({ _count: { id: true } }),
@@ -68,32 +81,46 @@ export default async function HomePage() {
 
   const STATS = [
     { value: `${totalProperties}+`, label: "Propiedades activas" },
-    { value: "10+",   label: "Años de experiencia" },
-    { value: "500+",  label: "Familias asesoradas" },
-    { value: "100%",  label: "Transparencia" },
+    { value: "10+", label: "Años de experiencia" },
+    { value: "500+", label: "Familias asesoradas" },
+    { value: "100%", label: "Transparencia" },
   ];
 
   // Preload de la primera imagen del hero desde el servidor.
-  const heroPreloadUrl = (featured[0] as FeaturedPropertyCard | undefined)?.images?.[0] ?? null;
+  const heroPreloadUrl =
+    (featured[0] as FeaturedPropertyCard | undefined)?.images?.[0] ?? null;
 
   return (
     <main>
       {/* Preload de la imagen LCP del hero (generado server-side) */}
       {heroPreloadUrl && (
-        <link rel="preload" as="image" href={heroPreloadUrl} fetchPriority="high" />
+        <link
+          rel="preload"
+          as="image"
+          href={heroPreloadUrl}
+          fetchPriority="high"
+        />
       )}
 
       {/* ══ 1. HERO CAROUSEL ══ */}
       <HeroCarousel properties={featured} />
 
       {/* ══ 2. ZONAS DE COBERTURA ══ */}
-      <section className="py-14 bg-white border-b" style={{ borderColor: "var(--color-border)" }}>
+      <section
+        className="py-14 bg-white border-b"
+        style={{ borderColor: "var(--color-border)" }}
+      >
         <div className="section-container">
           <div className="text-center mb-8">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] mb-2" style={{ color: "var(--color-gold)" }}>
+            <p
+              className="text-sm font-semibold uppercase tracking-[0.2em] mb-2"
+              style={{ color: "var(--color-gold)" }}
+            >
               Cobertura
             </p>
-            <h2 className="font-display text-2xl lg:text-3xl font-bold">Zonas donde operamos</h2>
+            <h2 className="font-display text-2xl lg:text-3xl font-bold">
+              Zonas donde operamos
+            </h2>
           </div>
           <div className="flex flex-wrap justify-center gap-3">
             {ZONES.map((zone) => (
@@ -116,7 +143,10 @@ export default async function HomePage() {
           <div className="section-container">
             <div className="flex items-end justify-between mb-10">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] mb-2" style={{ color: "var(--color-gold)" }}>
+                <p
+                  className="text-sm font-semibold uppercase tracking-[0.2em] mb-2"
+                  style={{ color: "var(--color-gold)" }}
+                >
                   Selección especial
                 </p>
                 <h2 className="font-display text-3xl lg:text-4xl font-bold text-[--color-foreground]">
@@ -133,9 +163,11 @@ export default async function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {(featured.slice(0, 6) as FeaturedPropertyCard[]).map((property) => (
-                <PropertyCard key={property.id} property={property} />
-              ))}
+              {(featured.slice(0, 6) as FeaturedPropertyCard[]).map(
+                (property) => (
+                  <PropertyCard key={property.id} property={property} />
+                ),
+              )}
             </div>
 
             <div className="text-center mt-10 sm:hidden">
@@ -155,13 +187,22 @@ export default async function HomePage() {
       <section className="py-20 bg-white">
         <div className="section-container">
           <div className="text-center max-w-xl mx-auto mb-14">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] mb-3" style={{ color: "var(--color-gold)" }}>
+            <p
+              className="text-sm font-semibold uppercase tracking-[0.2em] mb-3"
+              style={{ color: "var(--color-gold)" }}
+            >
               Nuestra propuesta
             </p>
-            <h2 className="font-display text-3xl lg:text-4xl font-bold mb-4">¿Por qué elegirnos?</h2>
-            <p className="leading-relaxed" style={{ color: "var(--color-muted-foreground)" }}>
-              Nos dedicamos a la comercialización de casas y lotes en barrios cerrados y countrys
-              de Zona Norte del GBA, con un servicio personalizado y transparente.
+            <h2 className="font-display text-3xl lg:text-4xl font-bold mb-4">
+              ¿Por qué elegirnos?
+            </h2>
+            <p
+              className="leading-relaxed"
+              style={{ color: "var(--color-muted-foreground)" }}
+            >
+              Nos dedicamos a la comercialización de casas y lotes en barrios
+              cerrados y countrys de Zona Norte del GBA, con un servicio
+              personalizado y transparente.
             </p>
           </div>
 
@@ -178,7 +219,12 @@ export default async function HomePage() {
                   <Icon size={24} style={{ color: "var(--color-gold-dark)" }} />
                 </div>
                 <h3 className="font-display text-lg font-bold mb-3">{title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: "var(--color-muted-foreground)" }}>{desc}</p>
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: "var(--color-muted-foreground)" }}
+                >
+                  {desc}
+                </p>
               </div>
             ))}
           </div>
@@ -186,15 +232,35 @@ export default async function HomePage() {
       </section>
 
       {/* ══ 5. ESTADÍSTICAS ══ */}
-      <section className="py-14 border-t border-b" style={{ background: "var(--color-muted)", borderColor: "var(--color-border)" }}>
+      <section
+        className="py-14 border-t border-b"
+        style={{
+          background: "var(--color-muted)",
+          borderColor: "var(--color-border)",
+        }}
+      >
         <div className="section-container">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x" style={{ "--tw-divide-opacity": 1 } as React.CSSProperties}>
+          <div
+            className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x"
+            style={{ "--tw-divide-opacity": 1 } as React.CSSProperties}
+          >
             {STATS.map(({ value, label }) => (
-              <div key={label} className="flex flex-col items-center text-center px-4">
-                <span className="font-display text-4xl font-bold mb-1" style={{ color: "var(--color-gold)" }}>
+              <div
+                key={label}
+                className="flex flex-col items-center text-center px-4"
+              >
+                <span
+                  className="font-display text-4xl font-bold mb-1"
+                  style={{ color: "var(--color-gold)" }}
+                >
                   {value}
                 </span>
-                <span className="text-sm font-medium" style={{ color: "var(--color-muted-foreground)" }}>{label}</span>
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: "var(--color-muted-foreground)" }}
+                >
+                  {label}
+                </span>
               </div>
             ))}
           </div>
@@ -202,20 +268,32 @@ export default async function HomePage() {
       </section>
 
       {/* ══ 6. CTA FINAL ══ */}
-      <section className="py-24 relative overflow-hidden" style={{ background: "var(--color-primary)" }}>
-        <div className="absolute -right-40 -top-40 size-96 rounded-full opacity-[0.04]" style={{ background: "var(--color-gold)" }} />
-        <div className="absolute -left-20 -bottom-20 size-64 rounded-full opacity-[0.04]" style={{ background: "var(--color-gold)" }} />
+      <section
+        className="py-24 relative overflow-hidden"
+        style={{ background: "var(--color-primary)" }}
+      >
+        <div
+          className="absolute -right-40 -top-40 size-96 rounded-full opacity-[0.04]"
+          style={{ background: "var(--color-gold)" }}
+        />
+        <div
+          className="absolute -left-20 -bottom-20 size-64 rounded-full opacity-[0.04]"
+          style={{ background: "var(--color-gold)" }}
+        />
 
         <div className="section-container relative z-10 text-center max-w-2xl mx-auto">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] mb-4" style={{ color: "var(--color-gold)" }}>
+          <p
+            className="text-sm font-semibold uppercase tracking-[0.2em] mb-4"
+            style={{ color: "var(--color-gold)" }}
+          >
             Estamos para ayudarte
           </p>
           <h2 className="font-display text-3xl lg:text-5xl font-bold text-white mb-5 leading-tight">
             ¿Necesitás asesoramiento?
           </h2>
           <p className="text-white/55 text-lg mb-10 leading-relaxed">
-            Ya sea que quieras comprar, vender o tasar una propiedad, nuestro equipo
-            te acompaña en cada paso del proceso.
+            Ya sea que quieras comprar, vender o tasar una propiedad, nuestro
+            equipo te acompaña en cada paso del proceso.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <a
@@ -225,7 +303,8 @@ export default async function HomePage() {
               className="flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
               style={{ background: "var(--color-gold)", color: "white" }}
             >
-              <Phone size={16} />Consultanos por WhatsApp
+              <Phone size={16} />
+              Consultanos por WhatsApp
             </a>
             <Link
               href="/propiedades"
@@ -238,27 +317,45 @@ export default async function HomePage() {
       </section>
 
       {/* ══ FOOTER ══ */}
-      <footer style={{ background: "var(--color-primary)", borderTop: "1px solid rgba(255,255,255,0.08)" }} className="py-8">
+      <footer
+        style={{
+          background: "var(--color-primary)",
+          borderTop: "1px solid rgba(255,255,255,0.08)",
+        }}
+        className="py-8"
+      >
         <div className="section-container flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <span className="font-display font-black text-xl text-white">GG</span>
-            <span className="font-sans text-[10px] font-bold tracking-[0.22em] uppercase" style={{ color: "var(--color-gold)" }}>
+            <span className="font-display font-black text-xl text-white">
+              GG
+            </span>
+            <span
+              className="font-sans text-[10px] font-bold tracking-[0.22em] uppercase"
+              style={{ color: "var(--color-gold)" }}
+            >
               Propiedades
             </span>
           </div>
           <p className="text-white/25 text-xs text-center">
-            © {new Date().getFullYear()} GG Propiedades · CMCPSI 6583 · Zona Norte GBA
+            © {new Date().getFullYear()} GG Propiedades · CMCPSI 6583 · Zona
+            Norte GBA
           </p>
           <div className="flex gap-1">
-            {[{ label: "Propiedades", href: "/propiedades" }, { label: "Contacto", href: "/contacto" }].map((l) => (
-              <Link key={l.href} href={l.href} className="text-white/35 hover:text-white/70 text-xs transition-colors px-2">
+            {[
+              { label: "Propiedades", href: "/propiedades" },
+              { label: "Contacto", href: "/contacto" },
+            ].map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="text-white/35 hover:text-white/70 text-xs transition-colors px-2"
+              >
                 {l.label}
               </Link>
             ))}
           </div>
         </div>
       </footer>
-
     </main>
   );
 }

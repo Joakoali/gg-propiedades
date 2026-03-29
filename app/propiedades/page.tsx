@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 import { prisma } from "@/app/lib/prisma";
 import { Suspense } from "react";
 type Category = "houses" | "lots" | "local";
@@ -16,35 +17,58 @@ export const metadata = {
 
 interface PageProps {
   searchParams: Promise<{
-    category?: string; zone?: string; q?: string;
-    minPrice?: string; maxPrice?: string; minBedrooms?: string;
-    pool?: string; financing?: string; mortgageEligible?: string;
-    sort?: string; page?: string;
+    category?: string;
+    zone?: string;
+    q?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    minBedrooms?: string;
+    pool?: string;
+    financing?: string;
+    mortgageEligible?: string;
+    sort?: string;
+    page?: string;
   }>;
 }
 
 export default async function PropiedadesPage({ searchParams }: PageProps) {
-  const { category, zone, q, minPrice, maxPrice, minBedrooms, pool, financing, mortgageEligible, sort, page: pageParam } = await searchParams;
+  const {
+    category,
+    zone,
+    q,
+    minPrice,
+    maxPrice,
+    minBedrooms,
+    pool,
+    financing,
+    mortgageEligible,
+    sort,
+    page: pageParam,
+  } = await searchParams;
   const currentPage = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
 
   const where: Record<string, unknown> = {};
-  if (category && ["houses", "lots", "local"].includes(category)) where.category = category as Category;
-  if (zone)             where.zone     = { contains: zone, mode: "insensitive" };
-  if (q)                where.title    = { contains: q,    mode: "insensitive" };
+  if (category && ["houses", "lots", "local"].includes(category))
+    where.category = category as Category;
+  if (zone) where.zone = { contains: zone, mode: "insensitive" };
+  if (q) where.title = { contains: q, mode: "insensitive" };
   const priceFilter: Record<string, number> = {};
   if (minPrice) priceFilter.gte = parseFloat(minPrice);
   if (maxPrice) priceFilter.lte = parseFloat(maxPrice);
   if (Object.keys(priceFilter).length > 0) where.price = priceFilter;
-  if (minBedrooms)      where.bedrooms = { gte: parseInt(minBedrooms) };
-  if (pool === "1")     where.pool     = true;
-  if (financing === "1")        where.financing        = true;
+  if (minBedrooms) where.bedrooms = { gte: parseInt(minBedrooms) };
+  if (pool === "1") where.pool = true;
+  if (financing === "1") where.financing = true;
   if (mortgageEligible === "1") where.mortgageEligible = true;
 
   const orderBy =
-    sort === "price_asc"  ? [{ price: "asc"  as const }] :
-    sort === "price_desc" ? [{ price: "desc" as const }] :
-    sort === "bedrooms"   ? [{ bedrooms: "desc" as const }] :
-    [{ featured: "desc" as const }, { createdAt: "desc" as const }];
+    sort === "price_asc"
+      ? [{ price: "asc" as const }]
+      : sort === "price_desc"
+        ? [{ price: "desc" as const }]
+        : sort === "bedrooms"
+          ? [{ bedrooms: "desc" as const }]
+          : [{ featured: "desc" as const }, { createdAt: "desc" as const }];
 
   const [properties, totalCount, zones] = await Promise.all([
     prisma.property.findMany({
@@ -63,7 +87,9 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
   ]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-  const zoneList = zones.map((z: { zone: string | null }) => z.zone as string).filter(Boolean);
+  const zoneList = zones
+    .map((z: { zone: string | null }) => z.zone as string)
+    .filter(Boolean);
 
   // Build base URL for pagination links (preserve all current filters)
   const params = new URLSearchParams();
@@ -87,7 +113,6 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
 
   return (
     <div className="min-h-screen" style={{ background: "var(--color-muted)" }}>
-
       {/* Banner */}
       <div
         className="relative flex items-end pb-10 pt-32 overflow-hidden"
@@ -95,15 +120,25 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
       >
         <div
           className="absolute inset-0 opacity-[0.06]"
-          style={{ backgroundImage: "url('/hero.jpg')", backgroundSize: "cover", backgroundPosition: "center" }}
+          style={{
+            backgroundImage: "url('/hero.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
         />
         <div className="section-container relative z-10">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] mb-2" style={{ color: "var(--color-gold)" }}>
+          <p
+            className="text-sm font-semibold uppercase tracking-[0.2em] mb-2"
+            style={{ color: "var(--color-gold)" }}
+          >
             Catálogo completo
           </p>
-          <h1 className="font-display text-4xl lg:text-5xl font-bold text-white">Propiedades</h1>
+          <h1 className="font-display text-4xl lg:text-5xl font-bold text-white">
+            Propiedades
+          </h1>
           <p className="text-white/50 mt-2 text-sm">
-            {totalCount} propiedad{totalCount !== 1 ? "es" : ""} encontrada{totalCount !== 1 ? "s" : ""}
+            {totalCount} propiedad{totalCount !== 1 ? "es" : ""} encontrada
+            {totalCount !== 1 ? "s" : ""}
             {category ? ` en ${CATEGORY_LABELS[category] ?? category}` : ""}
             {zone ? ` · ${zone}` : ""}
           </p>
@@ -113,21 +148,41 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
       {/* Contenido */}
       <div className="section-container py-10">
         <div className="mb-8">
-          <Suspense fallback={<div className="h-12 bg-white rounded-2xl card-shadow animate-pulse" />}>
-            <Filters zones={zoneList} currentCategory={category ?? ""} currentZone={zone ?? ""} />
+          <Suspense
+            fallback={
+              <div className="h-12 bg-white rounded-2xl card-shadow animate-pulse" />
+            }
+          >
+            <Filters
+              zones={zoneList}
+              currentCategory={category ?? ""}
+              currentZone={zone ?? ""}
+            />
           </Suspense>
         </div>
 
         {properties.length === 0 ? (
           <div className="text-center py-24 flex flex-col items-center gap-4">
             <div className="size-16 rounded-2xl bg-white flex items-center justify-center card-shadow">
-              <Home size={28} style={{ color: "var(--color-muted-foreground)" }} />
+              <Home
+                size={28}
+                style={{ color: "var(--color-muted-foreground)" }}
+              />
             </div>
-            <p className="text-lg font-display font-semibold">No hay propiedades con esos filtros</p>
-            <p className="text-sm" style={{ color: "var(--color-muted-foreground)" }}>
+            <p className="text-lg font-display font-semibold">
+              No hay propiedades con esos filtros
+            </p>
+            <p
+              className="text-sm"
+              style={{ color: "var(--color-muted-foreground)" }}
+            >
               Probá ajustando la búsqueda o eliminá algún filtro.
             </p>
-            <Link href="/propiedades" className="mt-2 text-sm font-medium underline" style={{ color: "var(--color-gold-dark)" }}>
+            <Link
+              href="/propiedades"
+              className="mt-2 text-sm font-medium underline"
+              style={{ color: "var(--color-gold-dark)" }}
+            >
               Ver todas las propiedades
             </Link>
           </div>
@@ -141,7 +196,10 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
 
             {/* ── Pagination ── */}
             {totalPages > 1 && (
-              <nav className="flex items-center justify-center gap-2 mt-12" aria-label="Paginación">
+              <nav
+                className="flex items-center justify-center gap-2 mt-12"
+                aria-label="Paginación"
+              >
                 {currentPage > 1 ? (
                   <Link
                     href={pageUrl(currentPage - 1)}
@@ -157,15 +215,27 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
 
                 <div className="flex items-center gap-1">
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
-                    .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                    .filter(
+                      (p) =>
+                        p === 1 ||
+                        p === totalPages ||
+                        Math.abs(p - currentPage) <= 1,
+                    )
                     .reduce<(number | "ellipsis")[]>((acc, p, i, arr) => {
-                      if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push("ellipsis");
+                      if (i > 0 && p - (arr[i - 1] as number) > 1)
+                        acc.push("ellipsis");
                       acc.push(p);
                       return acc;
                     }, [])
                     .map((item, i) =>
                       item === "ellipsis" ? (
-                        <span key={`e${i}`} className="px-2 text-sm" style={{ color: "var(--color-muted-foreground)" }}>...</span>
+                        <span
+                          key={`e${i}`}
+                          className="px-2 text-sm"
+                          style={{ color: "var(--color-muted-foreground)" }}
+                        >
+                          ...
+                        </span>
                       ) : (
                         <Link
                           key={item}
@@ -175,11 +245,15 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
                               ? "text-white"
                               : "bg-white border border-[--color-border] card-shadow hover:border-[--color-gold]"
                           }`}
-                          style={item === currentPage ? { background: "var(--color-primary)" } : undefined}
+                          style={
+                            item === currentPage
+                              ? { background: "var(--color-primary)" }
+                              : undefined
+                          }
                         >
                           {item}
                         </Link>
-                      )
+                      ),
                     )}
                 </div>
 

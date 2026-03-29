@@ -1,5 +1,5 @@
 "use server";
-
+export const runtime = "nodejs";
 import { prisma } from "@/app/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { MAX_FEATURED } from "@/app/lib/utils";
@@ -18,7 +18,9 @@ export async function toggleFeatured(id: string, currentFeatured: boolean) {
     } catch (e) {
       const msg = (e as Error).message;
       if (msg.startsWith("LIMIT:")) {
-        return { error: `Límite alcanzado: solo podés tener ${MAX_FEATURED} propiedades destacadas.` };
+        return {
+          error: `Límite alcanzado: solo podés tener ${MAX_FEATURED} propiedades destacadas.`,
+        };
       }
       return { error: "Error al actualizar." };
     }
