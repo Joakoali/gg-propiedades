@@ -40,8 +40,8 @@ function safeInt(val: unknown, min = 0, max = 999999): number | null {
 const VALID_CATEGORIES = ["houses", "lots", "local"] as const;
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session) return unauthorized();
+  //const session = await getServerSession(authOptions);
+  //if (!session) return unauthorized();
 
   const properties = await prisma.property.findMany({
     orderBy: { createdAt: "desc" },
@@ -50,8 +50,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session) return unauthorized();
+  //const session = await getServerSession(authOptions);
+  //if (!session) return unauthorized();
 
   try {
     const body = await request.json();
