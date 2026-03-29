@@ -18,6 +18,7 @@ R2_PUBLIC_URL = "https://pub-bd2ec60177e8464ab87d64b45deb3958.r2.dev"
 # R2_ACCOUNT_ID
 # R2_ACCESS_KEY_ID
 # R2_SECRET_ACCESS_KEY
+# RESEND_API_KEY
 
 # ── Assets (HTML, CSS, JS estáticos) ────────────────────────────────────────
 [assets]
