@@ -95,10 +95,7 @@ export default async function PropertyDetailPage({ params }: Props) {
     name: property.title,
     description: property.description.slice(0, 300),
     url: `https://ggpropiedades.com/propiedades/${slug}`,
-    datePosted:
-  typeof property.createdAt === "string"
-    ? property.createdAt
-    : property.createdAt?.toISOString(),
+    datePosted: property.createdAt,
     ...(property.images.length > 0 && { image: property.images }),
     ...(property.price && {
       offers: {
