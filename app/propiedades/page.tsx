@@ -66,7 +66,7 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
   }
 
   // Apply sort
-  function applySort(query: ReturnType<typeof db.from>) {
+  function applySort(query: any) {
     if (sort === "price_asc") return query.order("price", { ascending: true, nullsFirst: false });
     if (sort === "price_desc") return query.order("price", { ascending: false, nullsFirst: false });
     if (sort === "bedrooms") return query.order("bedrooms", { ascending: false, nullsFirst: false });
