@@ -50,7 +50,7 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
   const db = supabase();
 
   // ── Build the main query with filters ──
-  function applyFilters(query: ReturnType<typeof db.from>) {
+  function applyFilters(query: any) {
     let q2 = query;
     if (category && ["houses", "lots", "local"].includes(category))
       q2 = q2.eq("category", category as Category);
