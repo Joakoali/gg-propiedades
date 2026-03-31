@@ -29,9 +29,20 @@ export const metadata: Metadata = {
   description:
     "Inmobiliaria especializada en barrios cerrados y countrys de Zona Norte del GBA. Casas, terrenos y locales en Pilar, Escobar y alrededores. Tasación gratuita.",
   keywords: [
-    "inmobiliaria", "propiedades", "Pilar", "Escobar", "Zona Norte", "GBA",
-    "casas", "terrenos", "locales", "barrios cerrados", "countrys",
-    "venta de casas", "terrenos en Pilar", "inmobiliaria Zona Norte",
+    "inmobiliaria",
+    "propiedades",
+    "Pilar",
+    "Escobar",
+    "Zona Norte",
+    "GBA",
+    "casas",
+    "terrenos",
+    "locales",
+    "barrios cerrados",
+    "countrys",
+    "venta de casas",
+    "terrenos en Pilar",
+    "inmobiliaria Zona Norte",
   ],
   alternates: { canonical: BASE_URL },
   openGraph: {
@@ -40,19 +51,28 @@ export const metadata: Metadata = {
     url: BASE_URL,
     siteName: "GG Propiedades",
     title: "GG Propiedades | Inmobiliaria en Zona Norte GBA",
-    description: "Casas, terrenos y locales en barrios cerrados de Pilar, Escobar y alrededores. Tasación gratuita.",
-    images: [{ url: "/hero.jpg", width: 1200, height: 630, alt: "GG Propiedades" }],
+    description:
+      "Casas, terrenos y locales en barrios cerrados de Pilar, Escobar y alrededores. Tasación gratuita.",
+    images: [
+      { url: "/hero.jpg", width: 1200, height: 630, alt: "GG Propiedades" },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "GG Propiedades | Inmobiliaria en Zona Norte GBA",
-    description: "Casas, terrenos y locales en barrios cerrados de Pilar, Escobar y alrededores.",
+    description:
+      "Casas, terrenos y locales en barrios cerrados de Pilar, Escobar y alrededores.",
     images: ["/hero.jpg"],
   },
   robots: {
     index: true,
     follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
   verification: {
     // Cuando tengas Google Search Console, agregar: google: "tu-código-verificación"
@@ -70,10 +90,15 @@ export default function RootLayout({
     name: "GG Propiedades",
     url: BASE_URL,
     logo: `${BASE_URL}/logo.png`,
-    description: "Inmobiliaria especializada en barrios cerrados y countrys de Zona Norte del GBA.",
+    description:
+      "Inmobiliaria especializada en barrios cerrados y countrys de Zona Norte del GBA.",
     areaServed: {
       "@type": "GeoCircle",
-      geoMidpoint: { "@type": "GeoCoordinates", latitude: -34.46, longitude: -58.91 },
+      geoMidpoint: {
+        "@type": "GeoCoordinates",
+        latitude: -34.46,
+        longitude: -58.91,
+      },
       geoRadius: "30000",
     },
     address: {
@@ -100,10 +125,19 @@ export default function RootLayout({
         {/* Conexión anticipada al CDN de imágenes (Cloudflare R2).
             dns-prefetch resuelve el DNS, preconnect abre el TCP+TLS.
             Juntos eliminan ~200-500ms de latencia en la primera imagen. */}
-        <link rel="dns-prefetch" href="https://pub-bd2ec60177e8464ab87d64b45deb3958.r2.dev" />
-        <link rel="preconnect" href="https://pub-bd2ec60177e8464ab87d64b45deb3958.r2.dev" crossOrigin="anonymous" />
+        <link
+          rel="dns-prefetch"
+          href="https://pub-bd2ec60177e8464ab87d64b45deb3958.r2.dev"
+        />
+        <link
+          rel="preconnect"
+          href="https://pub-bd2ec60177e8464ab87d64b45deb3958.r2.dev"
+          crossOrigin="anonymous"
+        />
       </head>
-      <body className={`${geistSans.variable} ${playfair.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${playfair.variable} antialiased`}
+      >
         <Providers>
           <Navbar />
           {children}
