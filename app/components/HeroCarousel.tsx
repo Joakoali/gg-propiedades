@@ -37,7 +37,6 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
   const next = useCallback(() => setCurrent((c) => (c + 1) % total), [total]);
   const prev = useCallback(() => setCurrent((c) => (c - 1 + total) % total), [total]);
 
-  // Auto-play cada 5 segundos
   useEffect(() => {
     if (paused || total <= 1) return;
     const timer = setInterval(next, 5000);
@@ -45,7 +44,6 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
   }, [paused, next, total]);
 
   if (total === 0) {
-    // Fallback: hero estático si no hay destacadas
     return (
       <section className="relative flex items-center justify-center min-h-screen bg-[--color-primary] overflow-hidden">
         <div
@@ -83,8 +81,7 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
   const location = [prop.neighborhood, prop.zone].filter(Boolean).join(" · ");
   const price    = formatPrice(prop.price);
 
-  // Pixel oscuro (#111118) para usar como placeholder mientras carga la imagen.
-  // Se ve inmediatamente desde el HTML inicial, evitando el flash gris.
+  // Evita el flash gris mientras carga la imagen principal.
   const DARK_BLUR = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGMQFJQAAABxADsqqQkpAAAAAElFTkSuQmCC";
 
   return (
@@ -94,7 +91,6 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* ── Imágenes de fondo (con transición) ── */}
       {properties.map((p, i) => (
         <div
           key={p.id}
@@ -116,17 +112,14 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
           ) : (
             <div className="w-full h-full bg-[--color-primary]" />
           )}
-          {/* Gradiente oscuro */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         </div>
       ))}
 
-      {/* ── Contenido del slide ── */}
       <div className="relative z-10 flex items-end min-h-screen pb-24 pt-32">
         <div className="section-container w-full">
           <div className="max-w-2xl animate-[fade-in_0.5s_ease-out]" key={current}>
-            {/* Badge categoría */}
             <div className="flex items-center gap-3 mb-5">
               <span
                 className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"
@@ -139,12 +132,10 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
               </span>
             </div>
 
-            {/* Título */}
             <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4">
               {prop.title}
             </h1>
 
-            {/* Ubicación */}
             {location && (
               <div className="flex items-center gap-1.5 text-white/70 text-sm mb-6">
                 <MapPin size={14} />
@@ -152,7 +143,6 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
               </div>
             )}
 
-            {/* Stats */}
             <div className="flex flex-wrap gap-4 mb-8">
               {prop.bedrooms != null && (
                 <div className="flex items-center gap-2 text-white/80 text-sm">
@@ -168,7 +158,6 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
               )}
             </div>
 
-            {/* Precio + CTA */}
             <div className="flex flex-wrap items-center gap-4">
               {price && (
                 <span className="text-3xl font-bold text-white font-display">
@@ -193,10 +182,8 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
         </div>
       </div>
 
-      {/* ── Controles de navegación ── */}
       {total > 1 && (
         <>
-          {/* Flechas */}
           <button
             onClick={prev}
             className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-20 size-11 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 transition-all backdrop-blur-sm"
@@ -212,7 +199,6 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
             <ChevronRight size={20} />
           </button>
 
-          {/* Dots */}
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
             {properties.map((_, i) => (
               <button
@@ -229,7 +215,6 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
             ))}
           </div>
 
-          {/* Contador */}
           <div className="absolute bottom-8 right-6 lg:right-10 z-20 text-white/50 text-xs font-medium tabular-nums">
             {current + 1} / {total}
           </div>

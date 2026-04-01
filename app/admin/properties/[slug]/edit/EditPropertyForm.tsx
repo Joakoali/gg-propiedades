@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Upload, X, ImageIcon } from "lucide-react";
 import Link from "next/link";
 import { ZONES } from "@/app/lib/utils";
+import { compressImages, uploadInBatches } from "@/app/lib/image-utils";
 
 interface Property {
   slug: string;
@@ -27,6 +28,7 @@ interface Property {
 export default function EditPropertyForm({ property }: { property: Property }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState("");
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -83,21 +85,40 @@ export default function EditPropertyForm({ property }: { property: Property }) {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setUploadStatus("");
 
     let uploadedUrls: string[] = [];
     if (newFiles.length > 0) {
-      const fd = new FormData();
-      newFiles.forEach((file) => fd.append("images", file));
-      const uploadRes = await fetch("/api/upload", { method: "POST", body: fd });
-      if (!uploadRes.ok) {
-        setError("Error al subir las imágenes nuevas");
+      setUploadStatus("Comprimiendo imágenes...");
+      let compressed: File[];
+      try {
+        compressed = await compressImages(newFiles, (done, total) => {
+          setUploadStatus(`Comprimiendo ${done}/${total}...`);
+        });
+      } catch {
+        setError("Error al comprimir las imágenes");
         setLoading(false);
         return;
       }
-      const { urls } = await uploadRes.json();
-      uploadedUrls = urls;
+
+      setUploadStatus("Subiendo imágenes...");
+      const result = await uploadInBatches(compressed, (uploaded, total) => {
+        setUploadStatus(`Subiendo ${uploaded}/${total}...`);
+      });
+
+      if (result.urls.length === 0) {
+        setError("Error al subir las imágenes: " + (result.errors[0] ?? "error desconocido"));
+        setLoading(false);
+        return;
+      }
+      uploadedUrls = result.urls;
+
+      if (result.errors.length > 0) {
+        console.warn("Algunas imágenes fallaron:", result.errors);
+      }
     }
 
+    setUploadStatus("Guardando...");
     const finalImages = [...existingImages, ...uploadedUrls];
 
     const res = await fetch(`/api/properties/${property.slug}`, {
@@ -334,7 +355,7 @@ export default function EditPropertyForm({ property }: { property: Property }) {
               Cancelar
             </button>
             <button type="submit" disabled={loading} className="flex-1 py-3 rounded-xl text-sm font-semibold transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--color-primary)", color: "white" }}>
-              {loading ? "Guardando..." : "Guardar cambios"}
+              {loading ? (uploadStatus || "Guardando...") : "Guardar cambios"}
             </button>
           </div>
         </form>

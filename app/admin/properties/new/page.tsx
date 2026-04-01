@@ -4,10 +4,12 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Upload, X, ImageIcon } from "lucide-react";
 import Link from "next/link";
 import { ZONES } from "@/app/lib/utils";
+import { compressImages, uploadInBatches } from "@/app/lib/image-utils";
 
 export default function NewPropertyPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState("");
   const [error, setError] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -59,21 +61,42 @@ export default function NewPropertyPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setUploadStatus("");
 
     let imageUrls: string[] = [];
     if (images.length > 0) {
-      const fd = new FormData();
-      images.forEach((file) => fd.append("images", file));
-      const uploadRes = await fetch("/api/upload", { method: "POST", body: fd });
-      if (!uploadRes.ok) {
-        setError("Error al subir las imágenes");
+      // Step 1: Compress images client-side
+      setUploadStatus("Comprimiendo imágenes...");
+      let compressed: File[];
+      try {
+        compressed = await compressImages(images, (done, total) => {
+          setUploadStatus(`Comprimiendo ${done}/${total}...`);
+        });
+      } catch {
+        setError("Error al comprimir las imágenes");
         setLoading(false);
         return;
       }
-      const { urls } = await uploadRes.json();
-      imageUrls = urls;
+
+      // Step 2: Upload in batches of 5
+      setUploadStatus("Subiendo imágenes...");
+      const result = await uploadInBatches(compressed, (uploaded, total) => {
+        setUploadStatus(`Subiendo ${uploaded}/${total}...`);
+      });
+
+      if (result.urls.length === 0) {
+        setError("Error al subir las imágenes: " + (result.errors[0] ?? "error desconocido"));
+        setLoading(false);
+        return;
+      }
+      imageUrls = result.urls;
+
+      if (result.errors.length > 0) {
+        console.warn("Algunas imágenes fallaron:", result.errors);
+      }
     }
 
+    setUploadStatus("Guardando propiedad...");
     const res = await fetch("/api/properties", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -423,7 +446,7 @@ export default function NewPropertyPage() {
               className="flex-1 py-3 rounded-xl text-sm font-semibold transition hover:opacity-90 disabled:opacity-50"
               style={{ background: "var(--color-primary)", color: "white" }}
             >
-              {loading ? "Guardando..." : "Guardar propiedad"}
+              {loading ? (uploadStatus || "Guardando...") : "Guardar propiedad"}
             </button>
           </div>
         </form>

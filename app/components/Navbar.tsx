@@ -48,14 +48,12 @@ export default function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const isHome = pathname === "/";
 
-  // Efecto scroll
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Cerrar dropdown al click afuera
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (
@@ -69,7 +67,6 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Cerrar menú al navegar
   useEffect(() => {
     startTransition(() => {
       setMobileOpen(false);
@@ -81,7 +78,6 @@ export default function Navbar() {
 
   return (
     <>
-      {/* ══ Barra principal ══ */}
       <header
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
@@ -98,10 +94,10 @@ export default function Navbar() {
               <Image
                 src={transparent ? NAVBAR_LOGOS.light : NAVBAR_LOGOS.dark}
                 alt="GG Propiedades"
-                width={168}
-                height={54}
+                width={210}
+                height={68}
                 priority
-                className="h-[56px] w-auto sm:h-[62px] lg:h-[68px] transition-opacity duration-300"
+                className="h-14 w-auto sm:h-16 lg:h-[72px] transition-opacity duration-300"
               />
             </Link>
 

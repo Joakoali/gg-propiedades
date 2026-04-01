@@ -15,8 +15,6 @@ import {
   MapPin,
 } from "lucide-react";
 
-// ── Tipos ──────────────────────────────────────────────────────────────────────
-
 interface FeaturedPropertyCard {
   id: string;
   slug: string;
@@ -29,10 +27,6 @@ interface FeaturedPropertyCard {
   coveredArea: number | null;
   category: string;
 }
-
-// ── Data fetching (Server Component — sin waterfalls, Promise.all) ─────────────
-
-// ── Constantes estáticas ──────────────────────────────────────────────────────
 
 const FEATURES = [
   {
@@ -52,8 +46,6 @@ const FEATURES = [
   },
 ];
 
-// ── Page ──────────────────────────────────────────────────────────────────────
-
 export default async function HomePage() {
   const { featured, totalProperties } = await getCachedHomeData();
 
@@ -64,13 +56,11 @@ export default async function HomePage() {
     { value: "100%", label: "Transparencia" },
   ];
 
-  // Preload de la primera imagen del hero desde el servidor.
   const heroPreloadUrl =
     (featured[0] as FeaturedPropertyCard | undefined)?.images?.[0] ?? null;
 
   return (
     <main>
-      {/* Preload de la imagen LCP del hero (generado server-side) */}
       {heroPreloadUrl && (
         <link
           rel="preload"
@@ -80,10 +70,8 @@ export default async function HomePage() {
         />
       )}
 
-      {/* ══ 1. HERO CAROUSEL ══ */}
       <HeroCarousel properties={featured} />
 
-      {/* ══ 2. ZONAS DE COBERTURA ══ */}
       <section
         className="py-14 bg-white border-b"
         style={{ borderColor: "var(--color-border)" }}
@@ -115,7 +103,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ══ 3. PROPIEDADES DESTACADAS ══ */}
       {featured.length > 0 && (
         <section className="py-20 bg-[--color-muted]">
           <div className="section-container">
@@ -161,7 +148,6 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ══ 4. POR QUÉ ELEGIRNOS ══ */}
       <section className="py-20 bg-white">
         <div className="section-container">
           <div className="text-center max-w-xl mx-auto mb-14">
@@ -209,7 +195,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ══ 5. ESTADÍSTICAS ══ */}
       <section
         className="py-14 border-t border-b"
         style={{
@@ -245,7 +230,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ══ 6. CTA FINAL ══ */}
       <section
         className="py-24 relative overflow-hidden"
         style={{ background: "var(--color-primary)" }}
@@ -294,7 +278,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ══ FOOTER ══ */}
       <footer
         style={{
           background: "var(--color-primary)",
