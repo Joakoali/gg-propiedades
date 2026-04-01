@@ -1,11 +1,11 @@
 export const runtime = "nodejs";
-import { cache } from "react";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, BedDouble, Ruler, Trees, MapPin, Star } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
-import { supabase, TABLE, type Property } from "@/app/lib/db";
+import { supabase, TABLE } from "@/app/lib/db";
+import { getCachedPropertyBySlug } from "@/app/lib/public-properties";
 import { formatPrice, CATEGORY_LABELS } from "@/app/lib/utils";
 import Gallery from "./Gallery";
 import ShareButton from "./ShareButton";
@@ -22,21 +22,11 @@ export async function generateStaticParams() {
   return (data ?? []).map((p) => ({ slug: p.slug }));
 }
 
-// React.cache() deduplicates the DB call between generateMetadata and the page
-const getProperty = cache(async (slug: string): Promise<Property | null> => {
-  const { data } = await supabase()
-    .from(TABLE)
-    .select("*")
-    .eq("slug", slug)
-    .single();
-  return data as Property | null;
-});
-
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const property = await getProperty(slug);
+  const property = await getCachedPropertyBySlug(slug);
   if (!property) return {};
 
   const location = [property.neighborhood, property.zone]
@@ -76,7 +66,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PropertyDetailPage({ params }: Props) {
   const { slug } = await params;
-  const property = await getProperty(slug);
+  const property = await getCachedPropertyBySlug(slug);
 
   if (!property) notFound();
 

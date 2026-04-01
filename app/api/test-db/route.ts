@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const { count, error } = await supabase()
       .from(TABLE)
-      .select("*", { count: "exact", head: true });
+      .select("id", { count: "exact", head: true });
 
     if (error) {
       return NextResponse.json({ ok: false, error: error.message });

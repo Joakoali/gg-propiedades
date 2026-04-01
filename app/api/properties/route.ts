@@ -1,11 +1,29 @@
 export const runtime = "nodejs";
-import { supabase, TABLE, generateId, type Property } from "@/app/lib/db";
+import { supabase, TABLE, generateId } from "@/app/lib/db";
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth-options";
 
+const ADMIN_PROPERTY_LIST_SELECT = [
+  "id",
+  "slug",
+  "title",
+  "category",
+  "price",
+  "zone",
+  "neighborhood",
+  "images",
+  "featured",
+  "bedrooms",
+].join(", ");
+
 function unauthorized() {
   return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+}
+
+function revalidatePublicPropertyData() {
+  revalidateTag("properties", "max");
 }
 
 /** Only allow HTTPS image URLs from known domains */
@@ -45,14 +63,14 @@ export async function GET() {
 
   const { data, error } = await supabase()
     .from(TABLE)
-    .select("*")
+    .select(ADMIN_PROPERTY_LIST_SELECT)
     .order("createdAt", { ascending: false });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data as Property[]);
+  return NextResponse.json(data ?? []);
 }
 
 export async function POST(request: Request) {
@@ -120,6 +138,8 @@ export async function POST(request: Request) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
+    revalidatePublicPropertyData();
 
     return NextResponse.json(data);
   } catch {

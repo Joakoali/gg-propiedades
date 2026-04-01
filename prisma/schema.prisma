@@ -5,6 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Property{
@@ -26,6 +27,11 @@ model Property{
   mortgageEligible Boolean @default(false)
   featured Boolean @default(false)
   createdAt DateTime @default(now())
+
+  @@index([featured, createdAt(sort: Desc)])
+  @@index([category, createdAt(sort: Desc)])
+  @@index([price])
+  @@index([bedrooms])
 }
 
 enum Category{

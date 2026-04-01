@@ -1,9 +1,10 @@
 export const runtime = "nodejs";
+export const revalidate = 300;
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { supabase, TABLE, type Property } from "@/app/lib/db";
 import HeroCarousel from "@/app/components/HeroCarousel";
 import PropertyCard from "@/app/components/PropertyCard";
+import { getCachedHomeData } from "@/app/lib/public-properties";
 import { ZONES } from "@/app/lib/utils";
 import {
   ShieldCheck,
@@ -31,27 +32,6 @@ interface FeaturedPropertyCard {
 
 // ── Data fetching (Server Component — sin waterfalls, Promise.all) ─────────────
 
-async function getHomeData() {
-  const db = supabase();
-
-  const [featuredRes, countRes] = await Promise.all([
-    db
-      .from(TABLE)
-      .select(
-        "id, slug, title, price, images, neighborhood, zone, bedrooms, coveredArea, category",
-      )
-      .eq("featured", true)
-      .order("createdAt", { ascending: false })
-      .limit(9),
-    db.from(TABLE).select("*", { count: "exact", head: true }),
-  ]);
-
-  const featured = (featuredRes.data ?? []) as FeaturedPropertyCard[];
-  const totalProperties = countRes.count ?? 0;
-
-  return { featured, totalProperties };
-}
-
 // ── Constantes estáticas ──────────────────────────────────────────────────────
 
 const FEATURES = [
@@ -75,7 +55,7 @@ const FEATURES = [
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
-  const { featured, totalProperties } = await getHomeData();
+  const { featured, totalProperties } = await getCachedHomeData();
 
   const STATS = [
     { value: `${totalProperties}+`, label: "Propiedades activas" },

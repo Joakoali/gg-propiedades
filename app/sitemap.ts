@@ -1,7 +1,8 @@
 import { MetadataRoute } from "next";
-import { supabase, TABLE } from "@/app/lib/db";
+import { getCachedPropertySlugs } from "@/app/lib/public-properties";
 
 const BASE_URL = "https://ggpropiedades.com";
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Páginas estáticas
@@ -27,9 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Páginas dinámicas: una por cada propiedad
-  const { data: properties } = await supabase()
-    .from(TABLE)
-    .select("slug, createdAt");
+  const properties = await getCachedPropertySlugs();
 
   const propertyPages: MetadataRoute.Sitemap = (properties ?? []).map(
     (p: { slug: string; createdAt: string }) => ({

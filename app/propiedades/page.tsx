@@ -1,14 +1,16 @@
 export const runtime = "nodejs";
-import { supabase, TABLE, type Property } from "@/app/lib/db";
+export const revalidate = 120;
+
 import { Suspense } from "react";
-type Category = "houses" | "lots" | "local";
 import { Home, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { CATEGORY_LABELS } from "@/app/lib/utils";
+import {
+  getCachedPropertyList,
+  getCachedZones,
+} from "@/app/lib/public-properties";
 import Filters from "./Filters";
 import PropertyCard from "@/app/components/PropertyCard";
-
-const PAGE_SIZE = 12;
 
 export const metadata = {
   title: "Propiedades",
@@ -45,70 +47,30 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
     sort,
     page: pageParam,
   } = await searchParams;
-  const currentPage = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
 
-  const db = supabase();
+  const currentPage = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
 
-  // ── Build the main query with filters ──
-  function applyFilters(query: any) {
-    let q2 = query;
-    if (category && ["houses", "lots", "local"].includes(category))
-      q2 = q2.eq("category", category as Category);
-    if (zone) q2 = q2.ilike("zone", `%${zone}%`);
-    if (q) q2 = q2.ilike("title", `%${q}%`);
-    if (minPrice) q2 = q2.gte("price", parseFloat(minPrice));
-    if (maxPrice) q2 = q2.lte("price", parseFloat(maxPrice));
-    if (minBedrooms) q2 = q2.gte("bedrooms", parseInt(minBedrooms));
-    if (pool === "1") q2 = q2.eq("pool", true);
-    if (financing === "1") q2 = q2.eq("financing", true);
-    if (mortgageEligible === "1") q2 = q2.eq("mortgageEligible", true);
-    return q2;
-  }
-
-  // Apply sort
-  function applySort(query: any) {
-    if (sort === "price_asc") return query.order("price", { ascending: true, nullsFirst: false });
-    if (sort === "price_desc") return query.order("price", { ascending: false, nullsFirst: false });
-    if (sort === "bedrooms") return query.order("bedrooms", { ascending: false, nullsFirst: false });
-    return query
-      .order("featured", { ascending: false })
-      .order("createdAt", { ascending: false });
-  }
-
-  const from = (currentPage - 1) * PAGE_SIZE;
-  const to = from + PAGE_SIZE - 1;
-
-  // Run all three queries in parallel
-  const [propertiesRes, countRes, zonesRes] = await Promise.all([
-    applySort(
-      applyFilters(db.from(TABLE).select("*"))
-    ).range(from, to),
-
-    applyFilters(
-      db.from(TABLE).select("*", { count: "exact", head: true })
+  const [listData, zoneList] = await Promise.all([
+    getCachedPropertyList(
+      {
+        category,
+        zone,
+        q,
+        minPrice,
+        maxPrice,
+        minBedrooms,
+        pool,
+        financing,
+        mortgageEligible,
+        sort,
+      },
+      currentPage,
     ),
-
-    db
-      .from(TABLE)
-      .select("zone")
-      .not("zone", "is", null)
-      .order("zone", { ascending: true }),
+    getCachedZones(),
   ]);
 
-  const properties = (propertiesRes.data ?? []) as Property[];
-  const totalCount = countRes.count ?? 0;
-  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const { properties, totalCount, totalPages } = listData;
 
-  // Deduplicate zones
-  const zoneList = [
-    ...new Set(
-      (zonesRes.data ?? [])
-        .map((z: { zone: string | null }) => z.zone as string)
-        .filter(Boolean)
-    ),
-  ];
-
-  // Build base URL for pagination links (preserve all current filters)
   const params = new URLSearchParams();
   if (category) params.set("category", category);
   if (zone) params.set("zone", zone);
@@ -122,15 +84,14 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
   if (sort) params.set("sort", sort);
 
   function pageUrl(page: number) {
-    const p = new URLSearchParams(params);
-    if (page > 1) p.set("page", String(page));
-    const qs = p.toString();
+    const nextParams = new URLSearchParams(params);
+    if (page > 1) nextParams.set("page", String(page));
+    const qs = nextParams.toString();
     return `/propiedades${qs ? `?${qs}` : ""}`;
   }
 
   return (
     <div className="min-h-screen" style={{ background: "var(--color-muted)" }}>
-      {/* Banner */}
       <div
         className="relative flex items-end pb-10 pt-32 overflow-hidden"
         style={{ background: "var(--color-primary)", minHeight: "220px" }}
@@ -162,7 +123,6 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
         </div>
       </div>
 
-      {/* Contenido */}
       <div className="section-container py-10">
         <div className="mb-8">
           <Suspense
@@ -211,7 +171,6 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
               ))}
             </div>
 
-            {/* ── Pagination ── */}
             {totalPages > 1 && (
               <nav
                 className="flex items-center justify-center gap-2 mt-12"
@@ -233,21 +192,22 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
                 <div className="flex items-center gap-1">
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
                     .filter(
-                      (p) =>
-                        p === 1 ||
-                        p === totalPages ||
-                        Math.abs(p - currentPage) <= 1,
+                      (page) =>
+                        page === 1 ||
+                        page === totalPages ||
+                        Math.abs(page - currentPage) <= 1,
                     )
-                    .reduce<(number | "ellipsis")[]>((acc, p, i, arr) => {
-                      if (i > 0 && p - (arr[i - 1] as number) > 1)
+                    .reduce<(number | "ellipsis")[]>((acc, page, i, arr) => {
+                      if (i > 0 && page - (arr[i - 1] as number) > 1) {
                         acc.push("ellipsis");
-                      acc.push(p);
+                      }
+                      acc.push(page);
                       return acc;
                     }, [])
                     .map((item, i) =>
                       item === "ellipsis" ? (
                         <span
-                          key={`e${i}`}
+                          key={`ellipsis-${i}`}
                           className="px-2 text-sm"
                           style={{ color: "var(--color-muted-foreground)" }}
                         >
@@ -256,7 +216,7 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
                       ) : (
                         <Link
                           key={item}
-                          href={pageUrl(item as number)}
+                          href={pageUrl(item)}
                           className={`size-10 rounded-xl text-sm font-medium flex items-center justify-center transition-colors ${
                             item === currentPage
                               ? "text-white"

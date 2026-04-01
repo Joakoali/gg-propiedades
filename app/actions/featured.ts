@@ -1,6 +1,6 @@
 "use server";
 import { supabase, TABLE } from "@/app/lib/db";
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { MAX_FEATURED } from "@/app/lib/utils";
 
 export async function toggleFeatured(id: string, currentFeatured: boolean) {
@@ -38,9 +38,7 @@ export async function toggleFeatured(id: string, currentFeatured: boolean) {
     if (error) return { error: "Error al actualizar." };
   }
 
-  revalidatePath("/");
-  revalidatePath("/propiedades");
-  revalidatePath("/admin");
+  revalidateTag("properties", "max");
 
   return { success: true };
 }

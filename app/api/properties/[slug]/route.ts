@@ -1,6 +1,7 @@
 export const runtime = "nodejs";
 import { supabase, TABLE } from "@/app/lib/db";
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth-options";
 
@@ -8,6 +9,11 @@ type Params = { params: Promise<{ slug: string }> };
 
 function unauthorized() {
   return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+}
+
+function revalidatePublicPropertyData(slug: string) {
+  revalidateTag("properties", "max");
+  revalidateTag(`property:${slug}`, "max");
 }
 
 /** Only allow HTTPS image URLs from known domains */
@@ -63,6 +69,8 @@ export async function DELETE(_: Request, { params }: Params) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  revalidatePublicPropertyData(slug);
 
   return NextResponse.json({ ok: true });
 }
@@ -123,6 +131,8 @@ export async function PUT(request: Request, { params }: Params) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
+    revalidatePublicPropertyData(slug);
 
     return NextResponse.json(data);
   } catch {
