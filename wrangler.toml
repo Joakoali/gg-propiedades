@@ -25,7 +25,7 @@ R2_PUBLIC_URL = "https://pub-bd2ec60177e8464ab87d64b45deb3958.r2.dev"
 # Este bucket va en TU cuenta de Cloudflare (la del Worker).
 # Crearlo con: npx wrangler r2 bucket create gg-cache
 [[r2_buckets]]
-binding = "NEXT_CACHE_R2"
+binding = "NEXT_INC_CACHE_R2_BUCKET"
 bucket_name = "gg-cache"
 
 # ── Assets (HTML, CSS, JS estáticos) ────────────────────────────────────────
