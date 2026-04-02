@@ -46,3 +46,11 @@ export const ZONE_FILTER_MAP: Record<string, string[]> = {
   "Cardales":              ["Cardales", "Campana"],
   "Exaltación de la Cruz": ["Exaltación de la Cruz"],
 };
+
+// ── Barrios que cruzan zonas: se muestran en ambas zonas ──
+// San Sebastián está entre Pilar y Escobar; al filtrar cualquiera de las dos
+// se incluyen todas las propiedades cuyo neighborhood contenga "San Sebastián".
+export const CROSS_ZONE_NEIGHBORHOODS: Record<string, string[]> = {
+  "Pilar":   ["San Sebastián"],
+  "Escobar": ["San Sebastián"],
+};
