@@ -1,6 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { supabase, TABLE, type Property } from "@/app/lib/db";
-import { ZONE_FILTER_MAP, ZONES } from "@/app/lib/utils";
+import { CROSS_ZONE_NEIGHBORHOODS, ZONE_FILTER_MAP, ZONES } from "@/app/lib/utils";
 
 export const PUBLIC_PAGE_SIZE = 12;
 
@@ -138,8 +138,14 @@ function applyFilters(query: FilterQuery, filters: NormalizedFilters) {
   if (filters.category) nextQuery = nextQuery.eq("category", filters.category);
   if (filters.zone) {
     const dbZones = ZONE_FILTER_MAP[filters.zone] ?? [filters.zone];
-    const orFilter = dbZones.map((z) => `zone.eq.${z}`).join(",");
-    nextQuery = nextQuery.or(orFilter);
+    const crossNeighborhoods = CROSS_ZONE_NEIGHBORHOODS[filters.zone] ?? [];
+
+    const conditions = [
+      ...dbZones.map((z) => `zone.eq.${z}`),
+      ...crossNeighborhoods.map((n) => `neighborhood.ilike.%${n}%`),
+    ];
+
+    nextQuery = nextQuery.or(conditions.join(","));
   }
   if (filters.q) nextQuery = nextQuery.ilike("title", `%${filters.q}%`);
   if (filters.minPrice != null) nextQuery = nextQuery.gte("price", filters.minPrice);
