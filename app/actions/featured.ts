@@ -38,7 +38,7 @@ export async function toggleFeatured(id: string, currentFeatured: boolean) {
     if (error) return { error: "Error al actualizar." };
   }
 
-  revalidateTag("properties");
+  revalidateTag("properties", "fetch");
 
   return { success: true };
 }
