@@ -38,11 +38,10 @@ export const ZONES = [
 ];
 
 // ── Mapeo zona display → valores reales en la DB ──
-// San Sebastián aparece tanto en Pilar como en Escobar.
 // La Cañada pertenece a Pilar. Campana pertenece a Cardales.
 export const ZONE_FILTER_MAP: Record<string, string[]> = {
-  "Pilar":                 ["Pilar", "La Cañada", "San Sebastián"],
-  "Escobar":               ["Escobar", "San Sebastián"],
+  "Pilar":                 ["Pilar", "La Cañada"],
+  "Escobar":               ["Escobar"],
   "Cardales":              ["Cardales", "Campana"],
   "Exaltación de la Cruz": ["Exaltación de la Cruz"],
 };
