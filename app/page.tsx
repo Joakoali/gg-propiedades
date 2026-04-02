@@ -1,4 +1,3 @@
-export const runtime = "nodejs";
 export const revalidate = 300;
 import Link from "next/link";
 import type { CSSProperties } from "react";
@@ -259,7 +258,7 @@ export default async function HomePage() {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <a
-              href="https://wa.me/5491166740000"
+              href="https://wa.me/5491127177588"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90"

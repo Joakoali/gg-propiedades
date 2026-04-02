@@ -1,4 +1,3 @@
-export const runtime = "nodejs";
 import { supabase, TABLE, type Property } from "@/app/lib/db";
 import { notFound } from "next/navigation";
 import EditPropertyForm from "./EditPropertyForm";

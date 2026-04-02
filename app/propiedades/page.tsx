@@ -1,4 +1,3 @@
-export const runtime = "nodejs";
 export const revalidate = 120;
 
 import { Suspense } from "react";
@@ -146,7 +145,7 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
                 style={{ color: "var(--color-muted-foreground)" }}
               />
             </div>
-            <p className="text-lg font-display font-semibold">
+            <p className="text-lg font-display font-bold">
               No hay propiedades con esos filtros
             </p>
             <p

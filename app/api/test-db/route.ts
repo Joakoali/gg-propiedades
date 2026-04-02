@@ -1,5 +1,4 @@
 // app/api/test-db/route.ts
-export const runtime = "nodejs";
 import { supabase, TABLE } from "@/app/lib/db";
 import { NextResponse } from "next/server";
 

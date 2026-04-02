@@ -1,4 +1,3 @@
-export const runtime = "nodejs";
 import { supabase, TABLE, generateId } from "@/app/lib/db";
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
@@ -70,7 +69,9 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data ?? []);
+  return NextResponse.json(data ?? [], {
+    headers: { "Cache-Control": "private, max-age=30" },
+  });
 }
 
 export async function POST(request: Request) {

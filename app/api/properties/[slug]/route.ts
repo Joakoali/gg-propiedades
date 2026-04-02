@@ -1,4 +1,3 @@
-export const runtime = "nodejs";
 import { supabase, TABLE } from "@/app/lib/db";
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";

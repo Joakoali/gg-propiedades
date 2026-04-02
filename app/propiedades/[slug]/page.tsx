@@ -1,4 +1,3 @@
-export const runtime = "nodejs";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -325,7 +324,7 @@ export default async function PropertyDetailPage({ params }: Props) {
 
               {/* CTA — WhatsApp directo con mensaje pre-cargado */}
               <a
-                href={`https://wa.me/5491166740000?text=${encodeURIComponent(`Hola! Me interesa la propiedad "${property.title}". ¿Me podés dar más información?`)}`}
+                href={`https://wa.me/5491127177588?text=${encodeURIComponent(`Hola! Me interesa la propiedad "${property.title}". ¿Me podés dar más información?`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition hover:opacity-90"
