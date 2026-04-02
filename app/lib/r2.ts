@@ -165,7 +165,7 @@ export async function uploadToR2(
     now.toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
   const dateStamp = amzDate.slice(0, 8);
 
-  const bodyHashBuf = await crypto.subtle.digest("SHA-256", body);
+  const bodyHashBuf = await crypto.subtle.digest("SHA-256", new Uint8Array(body));
   const bodyHash = toHex(bodyHashBuf);
 
   const canonicalRequest = [
