@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { prisma } from "@/app/lib/prisma";
+import { getCachedPropertySlugs } from "@/app/lib/public-properties";
 
 const BASE_URL = "https://ggpropiedades.com";
 export const revalidate = 3600;
@@ -28,22 +28,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Páginas dinámicas: una por cada propiedad
-  if (!process.env.DATABASE_URL) return staticPages;
+  const properties = await getCachedPropertySlugs();
 
-  try {
-    const properties = await prisma.property.findMany({
-      select: { slug: true, createdAt: true },
-    });
-
-    const propertyPages: MetadataRoute.Sitemap = properties.map((p) => ({
+  const propertyPages: MetadataRoute.Sitemap = (properties ?? []).map(
+    (p: { slug: string; createdAt: string }) => ({
       url: `${BASE_URL}/propiedades/${p.slug}`,
-      lastModified: p.createdAt,
+      lastModified: new Date(p.createdAt),
       changeFrequency: "weekly" as const,
       priority: 0.8,
-    }));
+    }),
+  );
 
-    return [...staticPages, ...propertyPages];
-  } catch {
-    return staticPages;
-  }
+  return [...staticPages, ...propertyPages];
 }

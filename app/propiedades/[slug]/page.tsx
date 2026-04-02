@@ -1,10 +1,10 @@
-import { cache } from "react";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, BedDouble, Ruler, Trees, MapPin, Star } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
-import { prisma } from "@/app/lib/prisma";
+import { supabase, TABLE } from "@/app/lib/db";
+import { getCachedPropertyBySlug } from "@/app/lib/public-properties";
 import { formatPrice, CATEGORY_LABELS } from "@/app/lib/utils";
 import Gallery from "./Gallery";
 import ShareButton from "./ShareButton";
@@ -13,29 +13,19 @@ export const revalidate = 3600; // Re-generar cada 1 hora
 
 // Pre-genera las páginas de propiedades destacadas en build time
 export async function generateStaticParams() {
-  if (!process.env.DATABASE_URL) return [];
-  try {
-    const properties = await prisma.property.findMany({
-      select: { slug: true },
-      where: { featured: true },
-      take: 12,
-    });
-    return properties.map((p) => ({ slug: p.slug }));
-  } catch {
-    return [];
-  }
+  const { data } = await supabase()
+    .from(TABLE)
+    .select("slug")
+    .eq("featured", true)
+    .limit(12);
+  return (data ?? []).map((p) => ({ slug: p.slug }));
 }
-
-// React.cache() deduplicates the DB call between generateMetadata and the page
-const getProperty = cache(async (slug: string) => {
-  return prisma.property.findUnique({ where: { slug } });
-});
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const property = await getProperty(slug);
+  const property = await getCachedPropertyBySlug(slug);
   if (!property) return {};
 
   const location = [property.neighborhood, property.zone]
@@ -75,7 +65,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PropertyDetailPage({ params }: Props) {
   const { slug } = await params;
-  const property = await getProperty(slug);
+  const property = await getCachedPropertyBySlug(slug);
 
   if (!property) notFound();
 
