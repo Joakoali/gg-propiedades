@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Upload, X, ImageIcon } from "lucide-react";
 import Link from "next/link";
 import { ZONES } from "@/app/lib/utils";
-import { compressImages, uploadInBatches } from "@/app/lib/image-utils";
+import { compressImages, uploadWithPresignedUrls } from "@/app/lib/image-utils";
 
 export default function NewPropertyPage() {
   const router = useRouter();
@@ -80,7 +80,7 @@ export default function NewPropertyPage() {
 
       // Step 2: Upload in batches of 5
       setUploadStatus("Subiendo imágenes...");
-      const result = await uploadInBatches(compressed, (uploaded, total) => {
+      const result = await uploadWithPresignedUrls(compressed, (uploaded, total) => {
         setUploadStatus(`Subiendo ${uploaded}/${total}...`);
       });
 

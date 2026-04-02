@@ -21,6 +21,13 @@ R2_PUBLIC_URL = "https://pub-bd2ec60177e8464ab87d64b45deb3958.r2.dev"
 # R2_SECRET_ACCESS_KEY
 # RESEND_API_KEY
 
+# ── Cache R2 (Next.js ISR / incremental cache) ─────────────────────────────
+# Este bucket va en TU cuenta de Cloudflare (la del Worker).
+# Crearlo con: npx wrangler r2 bucket create gg-cache
+[[r2_buckets]]
+binding = "NEXT_CACHE_R2"
+bucket_name = "gg-cache"
+
 # ── Assets (HTML, CSS, JS estáticos) ────────────────────────────────────────
 [assets]
 directory = ".open-next/assets"

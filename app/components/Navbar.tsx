@@ -17,7 +17,7 @@ const CATEGORIES = [
 const SOCIAL = [
   {
     icon: FaWhatsapp,
-    href: "https://wa.me/5491166740000",
+    href: "https://wa.me/5491127177588",
     label: "WhatsApp",
     brandColor: "#25d366",
   },

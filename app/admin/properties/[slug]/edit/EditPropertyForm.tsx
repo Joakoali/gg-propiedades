@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Upload, X, ImageIcon } from "lucide-react";
 import Link from "next/link";
 import { ZONES } from "@/app/lib/utils";
-import { compressImages, uploadInBatches } from "@/app/lib/image-utils";
+import { compressImages, uploadWithPresignedUrls } from "@/app/lib/image-utils";
 
 interface Property {
   slug: string;
@@ -102,7 +102,7 @@ export default function EditPropertyForm({ property }: { property: Property }) {
       }
 
       setUploadStatus("Subiendo imágenes...");
-      const result = await uploadInBatches(compressed, (uploaded, total) => {
+      const result = await uploadWithPresignedUrls(compressed, (uploaded, total) => {
         setUploadStatus(`Subiendo ${uploaded}/${total}...`);
       });
 

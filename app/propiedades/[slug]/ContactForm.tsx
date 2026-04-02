@@ -39,7 +39,7 @@ export default function ContactForm({ propertyTitle, price, slug }: ContactFormP
     ].filter((line) => line !== null);
 
     window.open(
-      `https://wa.me/5491166740000?text=${encodeURIComponent(lines.join("\n"))}`,
+      `https://wa.me/5491127177588?text=${encodeURIComponent(lines.join("\n"))}`,
       "_blank",
     );
     setSent(true);

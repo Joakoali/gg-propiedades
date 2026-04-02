@@ -15,7 +15,7 @@ const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "600", "700", "800"],
+  weight: ["400", "700", "900"],
 });
 
 const BASE_URL = "https://ggpropiedades.com";

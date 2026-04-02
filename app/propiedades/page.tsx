@@ -1,4 +1,4 @@
-export const revalidate = 120;
+export const revalidate = 1800;
 
 import { Suspense } from "react";
 import { Home, ChevronLeft, ChevronRight } from "lucide-react";

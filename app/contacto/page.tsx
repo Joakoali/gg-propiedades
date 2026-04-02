@@ -11,8 +11,8 @@ const CONTACT_INFO = [
   {
     icon: Phone,
     label: "Teléfono / WhatsApp",
-    value: "+54 9 11 6674-0000",
-    href: "https://wa.me/5491166740000",
+    value: "+54 9 11 2717-7588",
+    href: "https://wa.me/5491127177588",
   },
   {
     icon: Mail,
@@ -32,7 +32,7 @@ const SOCIAL_LINKS = [
   {
     icon: FaWhatsapp,
     label: "WhatsApp",
-    href: "https://wa.me/5491166740000",
+    href: "https://wa.me/5491127177588",
     color: "#25d366",
   },
   {

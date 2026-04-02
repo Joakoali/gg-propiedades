@@ -200,7 +200,7 @@ export async function getCachedHomeData() {
       };
     },
     ["public-home-data"],
-    { revalidate: 300, tags: ["properties"] },
+    { revalidate: 1800, tags: ["properties"] },
   )();
 }
 
@@ -287,7 +287,7 @@ export async function getCachedPropertyList(
       };
     },
     ["public-property-list", serializeFilters(filters), String(currentPage)],
-    { revalidate: 120, tags: ["properties"] },
+    { revalidate: 1800, tags: ["properties"] },
   )();
 }
 
