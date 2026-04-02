@@ -29,13 +29,20 @@ export const CATEGORY_LABELS_PLURAL: Record<string, string> = {
 // ── Max featured properties ──
 export const MAX_FEATURED = 9;
 
-// ── Zonas de cobertura ──
+// ── Zonas de cobertura (display) ──
 export const ZONES = [
   "Pilar",
   "Escobar",
-  "San Sebastián",
-  "La Cañada",
   "Cardales",
-  "Campana",
   "Exaltación de la Cruz",
 ];
+
+// ── Mapeo zona display → valores reales en la DB ──
+// San Sebastián aparece tanto en Pilar como en Escobar.
+// La Cañada pertenece a Pilar. Campana pertenece a Cardales.
+export const ZONE_FILTER_MAP: Record<string, string[]> = {
+  "Pilar":                 ["Pilar", "La Cañada", "San Sebastián"],
+  "Escobar":               ["Escobar", "San Sebastián"],
+  "Cardales":              ["Cardales", "Campana"],
+  "Exaltación de la Cruz": ["Exaltación de la Cruz"],
+};

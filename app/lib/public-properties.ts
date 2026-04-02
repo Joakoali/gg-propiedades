@@ -1,5 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { supabase, TABLE, type Property } from "@/app/lib/db";
+import { ZONE_FILTER_MAP, ZONES } from "@/app/lib/utils";
 
 export const PUBLIC_PAGE_SIZE = 12;
 
@@ -68,6 +69,7 @@ interface FilterQuery {
   ilike(column: string, value: string): FilterQuery;
   gte(column: string, value: number): FilterQuery;
   lte(column: string, value: number): FilterQuery;
+  or(filter: string): FilterQuery;
   order(
     column: string,
     options: { ascending: boolean; nullsFirst?: boolean },
@@ -134,7 +136,11 @@ function applyFilters(query: FilterQuery, filters: NormalizedFilters) {
   let nextQuery = query;
 
   if (filters.category) nextQuery = nextQuery.eq("category", filters.category);
-  if (filters.zone) nextQuery = nextQuery.ilike("zone", `%${filters.zone}%`);
+  if (filters.zone) {
+    const dbZones = ZONE_FILTER_MAP[filters.zone] ?? [filters.zone];
+    const orFilter = dbZones.map((z) => `zone.eq.${z}`).join(",");
+    nextQuery = nextQuery.or(orFilter);
+  }
   if (filters.q) nextQuery = nextQuery.ilike("title", `%${filters.q}%`);
   if (filters.minPrice != null) nextQuery = nextQuery.gte("price", filters.minPrice);
   if (filters.maxPrice != null) nextQuery = nextQuery.lte("price", filters.maxPrice);
@@ -204,26 +210,8 @@ export async function getCachedHomeData() {
   )();
 }
 
-export async function getCachedZones() {
-  return unstable_cache(
-    async () => {
-      const { data } = await supabase()
-        .from(TABLE)
-        .select("zone")
-        .not("zone", "is", null)
-        .order("zone", { ascending: true });
-
-      return [
-        ...new Set(
-          (data ?? [])
-            .map((row: { zone: string | null }) => row.zone)
-            .filter((zone): zone is string => Boolean(zone)),
-        ),
-      ];
-    },
-    ["public-property-zones"],
-    { revalidate: 3600, tags: ["properties"] },
-  )();
+export async function getCachedZones(): Promise<string[]> {
+  return ZONES;
 }
 
 export async function getCachedPropertyList(
