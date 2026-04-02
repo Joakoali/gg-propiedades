@@ -99,7 +99,7 @@ export async function generatePresignedPutUrl(
 
   const now = new Date();
   const amzDate =
-    now.toISOString().replace(/[:-]|\.\d{3}/g, "").slice(0, 15) + "Z";
+    now.toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
   const dateStamp = amzDate.slice(0, 8);
 
   const credentialScope = `${dateStamp}/auto/s3/aws4_request`;
@@ -162,7 +162,7 @@ export async function uploadToR2(
 
   const now = new Date();
   const amzDate =
-    now.toISOString().replace(/[:-]|\.\d{3}/g, "").slice(0, 15) + "Z";
+    now.toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
   const dateStamp = amzDate.slice(0, 8);
 
   const bodyHashBuf = await crypto.subtle.digest("SHA-256", body);
