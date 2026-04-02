@@ -1,44 +1,34 @@
 "use server";
-import { supabase, TABLE } from "@/app/lib/db";
-import { revalidateTag } from "next/cache";
+import { prisma } from "@/app/lib/prisma";
+import { revalidatePath } from "next/cache";
 import { MAX_FEATURED } from "@/app/lib/utils";
 
 export async function toggleFeatured(id: string, currentFeatured: boolean) {
-  const db = supabase();
-
   // Si lo queremos marcar como destacado, verificar el límite
   if (!currentFeatured) {
     try {
-      const { count } = await db
-        .from(TABLE)
-        .select("*", { count: "exact", head: true })
-        .eq("featured", true);
+      const count = await prisma.property.count({ where: { featured: true } });
 
-      if ((count ?? 0) >= MAX_FEATURED) {
+      if (count >= MAX_FEATURED) {
         return {
           error: `Límite alcanzado: solo podés tener ${MAX_FEATURED} propiedades destacadas.`,
         };
       }
 
-      const { error } = await db
-        .from(TABLE)
-        .update({ featured: true })
-        .eq("id", id);
-
-      if (error) return { error: "Error al actualizar." };
+      await prisma.property.update({ where: { id }, data: { featured: true } });
     } catch {
       return { error: "Error al actualizar." };
     }
   } else {
-    const { error } = await db
-      .from(TABLE)
-      .update({ featured: false })
-      .eq("id", id);
-
-    if (error) return { error: "Error al actualizar." };
+    try {
+      await prisma.property.update({ where: { id }, data: { featured: false } });
+    } catch {
+      return { error: "Error al actualizar." };
+    }
   }
 
-  revalidateTag("properties", "max");
+  revalidatePath("/");
+  revalidatePath("/admin");
 
   return { success: true };
 }
