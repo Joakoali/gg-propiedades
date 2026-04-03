@@ -214,25 +214,13 @@ export default async function PropertyDetailPage({ params }: Props) {
       {/* ── Main content ── */}
       <div className="section-container py-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left: gallery + description */}
-          <div className="lg:col-span-2 flex flex-col gap-6">
+          {/* Gallery */}
+          <div className="lg:col-span-2">
             <Gallery images={property.images} title={property.title} />
-
-            <div className="bg-white rounded-2xl p-6 card-shadow">
-              <h2 className="font-display text-lg font-bold mb-3">
-                Descripción
-              </h2>
-              <p
-                className="leading-relaxed whitespace-pre-line text-sm"
-                style={{ color: "var(--color-muted-foreground)" }}
-              >
-                {property.description}
-              </p>
-            </div>
           </div>
 
-          {/* Right: info */}
-          <div className="flex flex-col gap-5">
+          {/* Right: info — appears after gallery on mobile, sidebar on desktop */}
+          <div className="lg:row-span-2 flex flex-col gap-5">
             {/* Price + stats card */}
             <div className="bg-white rounded-2xl p-6 card-shadow flex flex-col gap-5">
               {/* Price */}
@@ -333,6 +321,21 @@ export default async function PropertyDetailPage({ params }: Props) {
                 <FaWhatsapp size={17} />
                 Consultar por esta propiedad
               </a>
+            </div>
+          </div>
+
+          {/* Description — after price/CTA on mobile, under gallery on desktop */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-2xl p-6 card-shadow">
+              <h2 className="font-display text-lg font-bold mb-3">
+                Descripción
+              </h2>
+              <p
+                className="leading-relaxed whitespace-pre-line text-sm"
+                style={{ color: "var(--color-muted-foreground)" }}
+              >
+                {property.description}
+              </p>
             </div>
           </div>
         </div>
