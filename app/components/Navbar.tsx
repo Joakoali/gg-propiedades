@@ -193,13 +193,13 @@ export default function Navbar() {
             {/* Hamburger mobile */}
             <button
               onClick={() => setMobileOpen((v) => !v)}
-              className="lg:hidden p-2 rounded-lg transition-colors"
+              className="lg:hidden p-2.5 rounded-lg transition-colors"
               style={{
                 color: transparent ? "white" : "var(--color-foreground)",
               }}
               aria-label="Menú"
             >
-              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+              {mobileOpen ? <X size={26} /> : <Menu size={26} />}
             </button>
           </div>
         </div>
@@ -207,19 +207,19 @@ export default function Navbar() {
 
       {/* ══ Menú mobile ══ */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 bg-white flex flex-col pt-20 pb-8 px-6 overflow-y-auto animate-[fade-in_0.2s_ease-out]">
+        <div className="fixed inset-0 z-40 bg-white flex flex-col pt-20 pb-8 px-8 overflow-y-auto animate-[fade-in_0.2s_ease-out]">
           <nav className="flex flex-col gap-1">
             <Link
               href="/"
-              className="flex items-center gap-3 px-4 py-3.5 text-base font-medium rounded-xl hover:bg-[--color-muted] transition-colors"
+              className="flex items-center gap-3 px-4 py-4 text-lg font-medium rounded-xl hover:bg-[--color-muted] transition-colors"
             >
-              <Home size={18} style={{ color: "var(--color-gold)" }} />
+              <Home size={22} style={{ color: "var(--color-gold)" }} />
               Inicio
             </Link>
 
             <div className="px-4 py-3">
               <p
-                className="text-xs font-semibold uppercase tracking-widest mb-2"
+                className="text-sm font-semibold uppercase tracking-widest mb-2"
                 style={{ color: "var(--color-muted-foreground)" }}
               >
                 Propiedades
@@ -229,10 +229,10 @@ export default function Navbar() {
                   <Link
                     key={cat.href}
                     href={cat.href}
-                    className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 rounded-xl hover:bg-[--color-muted] transition-colors"
+                    className="flex items-center gap-3 px-3 py-3.5 text-base text-gray-700 rounded-xl hover:bg-[--color-muted] transition-colors"
                   >
                     <Building2
-                      size={14}
+                      size={18}
                       style={{ color: "var(--color-gold)" }}
                     />
                     {cat.label}
@@ -243,15 +243,15 @@ export default function Navbar() {
 
             <Link
               href="/contacto"
-              className="flex items-center gap-3 px-4 py-3.5 text-base font-medium rounded-xl hover:bg-[--color-muted] transition-colors"
+              className="flex items-center gap-3 px-4 py-4 text-lg font-medium rounded-xl hover:bg-[--color-muted] transition-colors"
             >
-              <Phone size={18} style={{ color: "var(--color-gold)" }} />
+              <Phone size={22} style={{ color: "var(--color-gold)" }} />
               Contacto
             </Link>
           </nav>
 
           <div className="mt-auto pt-8 border-t border-[--color-border]">
-            <div className="flex justify-center gap-6">
+            <div className="flex justify-center gap-8">
               {SOCIAL.map(({ icon: Icon, href, label, brandColor }) => (
                 <a
                   key={label}
@@ -262,7 +262,7 @@ export default function Navbar() {
                   className="transition-transform hover:scale-110"
                   style={{ color: brandColor }}
                 >
-                  <Icon size={26} />
+                  <Icon size={32} />
                 </a>
               ))}
             </div>
