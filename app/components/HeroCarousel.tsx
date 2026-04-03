@@ -186,32 +186,36 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
         <>
           <button
             onClick={prev}
-            className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-20 size-11 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 transition-all backdrop-blur-sm"
+            className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-20 size-9 sm:size-11 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 transition-all backdrop-blur-sm"
             aria-label="Anterior"
           >
             <ChevronLeft size={20} />
           </button>
           <button
             onClick={next}
-            className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-20 size-11 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 transition-all backdrop-blur-sm"
+            className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-20 size-9 sm:size-11 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 transition-all backdrop-blur-sm"
             aria-label="Siguiente"
           >
             <ChevronRight size={20} />
           </button>
 
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-1">
             {properties.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setCurrent(i)}
-                className="transition-all duration-300 rounded-full"
-                style={{
-                  width: i === current ? "24px" : "8px",
-                  height: "8px",
-                  background: i === current ? "var(--color-gold)" : "rgba(255,255,255,0.4)",
-                }}
+                className="flex items-center justify-center py-2"
                 aria-label={`Slide ${i + 1}`}
-              />
+              >
+                <span
+                  className="block transition-all duration-300 rounded-full"
+                  style={{
+                    width: i === current ? "24px" : "8px",
+                    height: "8px",
+                    background: i === current ? "var(--color-gold)" : "rgba(255,255,255,0.4)",
+                  }}
+                />
+              </button>
             ))}
           </div>
 

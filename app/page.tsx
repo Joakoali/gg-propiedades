@@ -203,7 +203,7 @@ export default async function HomePage() {
       >
         <div className="section-container">
           <div
-            className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x"
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 md:divide-x"
             style={{ "--tw-divide-opacity": 1 } as CSSProperties}
           >
             {STATS.map(({ value, label }) => (

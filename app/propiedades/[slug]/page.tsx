@@ -183,7 +183,7 @@ export default async function PropertyDetailPage({ params }: Props) {
               Propiedades
             </Link>
             <span>/</span>
-            <span className="text-white/70 truncate max-w-[200px] lg:max-w-xs">
+            <span className="text-white/70 truncate max-w-[280px] lg:max-w-xs">
               {property.title}
             </span>
           </nav>

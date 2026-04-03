@@ -44,7 +44,7 @@ export default function Gallery({ images, title }: GalleryProps) {
   if (images.length === 0) {
     return (
       <div
-        className="rounded-2xl h-80 flex items-center justify-center card-shadow"
+        className="rounded-2xl aspect-[4/3] sm:h-80 flex items-center justify-center card-shadow"
         style={{ background: "var(--color-muted)", color: "var(--color-muted-foreground)" }}
       >
         <div className="flex flex-col items-center gap-2">
@@ -63,7 +63,7 @@ export default function Gallery({ images, title }: GalleryProps) {
       <div className="flex flex-col gap-3">
         {/* Imagen principal — click abre lightbox */}
         <div
-          className="relative rounded-2xl overflow-hidden h-80 sm:h-[420px] card-shadow img-skeleton cursor-zoom-in group"
+          className="relative rounded-2xl overflow-hidden aspect-[4/3] sm:aspect-auto sm:h-[420px] card-shadow img-skeleton cursor-zoom-in group"
           onClick={() => openLightbox(selected)}
           role="button"
           aria-label="Ver imagen ampliada"
