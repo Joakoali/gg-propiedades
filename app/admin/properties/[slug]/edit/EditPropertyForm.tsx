@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Upload, X, ImageIcon } from "lucide-react";
 import Link from "next/link";
@@ -27,6 +28,28 @@ interface Property {
 
 export default function EditPropertyForm({ property }: { property: Property }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const saveMutation = useMutation({
+    mutationFn: (body: Record<string, unknown>) =>
+      fetch(`/api/properties/${property.slug}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }).then((r) => {
+        if (!r.ok) throw new Error("save failed");
+        return r.json();
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-properties"] });
+      router.push("/admin");
+    },
+    onError: () => {
+      setError("Hubo un error al guardar los cambios");
+      setLoading(false);
+    },
+  });
+
   const [loading, setLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState("");
   const [error, setError] = useState("");
@@ -120,20 +143,7 @@ export default function EditPropertyForm({ property }: { property: Property }) {
 
     setUploadStatus("Guardando...");
     const finalImages = [...existingImages, ...uploadedUrls];
-
-    const res = await fetch(`/api/properties/${property.slug}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, images: finalImages }),
-    });
-
-    if (res.ok) {
-      router.push("/admin");
-      router.refresh();
-    } else {
-      setError("Hubo un error al guardar los cambios");
-      setLoading(false);
-    }
+    saveMutation.mutate({ ...form, images: finalImages });
   }
 
   const totalImages = existingImages.length + newPreviews.length;
