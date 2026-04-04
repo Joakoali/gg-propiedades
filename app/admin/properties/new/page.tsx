@@ -101,7 +101,6 @@ export default function NewPropertyPage() {
         return;
       }
 
-      // Step 2: Upload in batches of 5
       setUploadStatus("Subiendo imágenes...");
       const result = await uploadWithPresignedUrls(compressed, (uploaded, total) => {
         setUploadStatus(`Subiendo ${uploaded}/${total}...`);
