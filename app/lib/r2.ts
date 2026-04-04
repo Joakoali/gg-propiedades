@@ -1,12 +1,4 @@
-/**
- * Cloudflare R2 upload utility — AWS SigV4 via Web Crypto API.
- * R2 is S3-compatible, region = "auto".
- * Uses crypto.subtle (native in Workers) — no node:crypto needed.
- */
-
 const BUCKET = "propiedades";
-
-// ── Web Crypto helpers ────────────────────────────────────────────────────────
 
 const enc = new TextEncoder();
 
@@ -35,13 +27,7 @@ async function sha256Hex(data: string): Promise<string> {
   return toHex(buf);
 }
 
-// ── Signing key cache (per day, per Worker instance) ─────────────────────────
-//
-// The SigV4 signing key depends only on secret + dateStamp.
-// It never changes within a day, so we derive it once and cache it.
-// On a warm Worker instance serving 20-file uploads: 0 derivation ops.
-// On a cold instance: 4 HMAC ops once, then 1 per file.
-
+// Cache de signing key (se renueva diariamente)
 let _signingKeyCache: { dateStamp: string; key: CryptoKey } | null = null;
 
 async function deriveSigningKey(
@@ -69,8 +55,6 @@ async function getSigningKey(
   return key;
 }
 
-// ── Path encoding ─────────────────────────────────────────────────────────────
-
 function encodePath(key: string): string {
   return key
     .split("/")
@@ -78,12 +62,6 @@ function encodePath(key: string): string {
     .join("/");
 }
 
-// ── Presigned PUT URL ─────────────────────────────────────────────────────────
-
-/**
- * Generate a presigned PUT URL so the browser can upload directly to R2.
- * The Worker only runs HMAC signing — no file data touches it.
- */
 export async function generatePresignedPutUrl(
   key: string,
   contentType: string,
@@ -143,70 +121,4 @@ export async function generatePresignedPutUrl(
     presignedUrl: `https://${host}${urlPath}?${canonicalQueryString}&X-Amz-Signature=${signature}`,
     publicUrl: `${publicUrlBase}/${key}`,
   };
-}
-
-// ── Direct server-side upload ─────────────────────────────────────────────────
-
-export async function uploadToR2(
-  key: string,
-  body: Buffer,
-  contentType: string,
-): Promise<string> {
-  const accountId = process.env.R2_ACCOUNT_ID!;
-  const accessKey = process.env.R2_ACCESS_KEY_ID!;
-  const secretKey = process.env.R2_SECRET_ACCESS_KEY!;
-  const publicUrlBase = process.env.R2_PUBLIC_URL!;
-
-  const host = `${accountId}.r2.cloudflarestorage.com`;
-  const urlPath = `/${BUCKET}/${encodePath(key)}`;
-
-  const now = new Date();
-  const amzDate =
-    now.toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
-  const dateStamp = amzDate.slice(0, 8);
-
-  const bodyHashBuf = await crypto.subtle.digest("SHA-256", new Uint8Array(body));
-  const bodyHash = toHex(bodyHashBuf);
-
-  const canonicalRequest = [
-    "PUT",
-    urlPath,
-    "",
-    `content-type:${contentType}\nhost:${host}\nx-amz-content-sha256:${bodyHash}\nx-amz-date:${amzDate}\n`,
-    "content-type;host;x-amz-content-sha256;x-amz-date",
-    bodyHash,
-  ].join("\n");
-
-  const credentialScope = `${dateStamp}/auto/s3/aws4_request`;
-  const stringToSign = [
-    "AWS4-HMAC-SHA256",
-    amzDate,
-    credentialScope,
-    await sha256Hex(canonicalRequest),
-  ].join("\n");
-
-  const signingKey = await getSigningKey(secretKey, dateStamp);
-  const sigBuffer = await hmacSha256(signingKey, stringToSign);
-  const signature = toHex(sigBuffer);
-
-  const res = await fetch(`https://${host}${urlPath}`, {
-    method: "PUT",
-    body: new Uint8Array(body),
-    headers: {
-      Authorization:
-        `AWS4-HMAC-SHA256 Credential=${accessKey}/${credentialScope},` +
-        `SignedHeaders=content-type;host;x-amz-content-sha256;x-amz-date,` +
-        `Signature=${signature}`,
-      "Content-Type": contentType,
-      "x-amz-date": amzDate,
-      "x-amz-content-sha256": bodyHash,
-    },
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`R2 upload failed (${res.status}): ${text}`);
-  }
-
-  return `${publicUrlBase}/${key}`;
 }
