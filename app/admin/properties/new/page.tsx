@@ -15,6 +15,22 @@ export default function NewPropertyPage() {
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [form, setForm] = useState({
+    title: "",
+    price: "",
+    category: "houses",
+    description: "",
+    bedrooms: "",
+    coveredArea: "",
+    semiCoveredArea: "",
+    lotArea: "",
+    neighborhood: "",
+    zone: "",
+    pool: false,
+    financing: false,
+    mortgageEligible: false,
+    featured: false,
+  });
 
   const queryClient = useQueryClient();
 
@@ -37,23 +53,6 @@ export default function NewPropertyPage() {
       setError("Hubo un error al cargar la propiedad");
       setLoading(false);
     },
-  });
-
-  const [form, setForm] = useState({
-    title: "",
-    price: "",
-    category: "houses",
-    description: "",
-    bedrooms: "",
-    coveredArea: "",
-    semiCoveredArea: "",
-    lotArea: "",
-    neighborhood: "",
-    zone: "",
-    pool: false,
-    financing: false,
-    mortgageEligible: false,
-    featured: false,
   });
 
   const handleChange = (
@@ -85,7 +84,7 @@ export default function NewPropertyPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    setUploadStatus(""); // This is needed before the mutation starts
+    setUploadStatus("");
 
     let imageUrls: string[] = [];
     if (images.length > 0) {
