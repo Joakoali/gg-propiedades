@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Pencil, Trash2, X, Star, Search, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleFeatured } from "@/app/actions/featured";
 import { CATEGORY_LABELS, MAX_FEATURED } from "@/app/lib/utils";
 
@@ -77,8 +78,6 @@ function SortHeader({ label, sortKey, current, dir, onClick }: {
 // ── Main component ────────────────────────────────────────────────────────────
 export default function PropertyList() {
   const router = useRouter();
-  const [properties, setProperties]     = useState<Property[]>([]);
-  const [loadingList, setLoadingList]   = useState(true);
   const [toDelete, setToDelete]         = useState<Property | null>(null);
   const [deleting, setDeleting]         = useState(false);
   const [featuredError, setFeaturedError] = useState<string | null>(null);
@@ -91,23 +90,26 @@ export default function PropertyList() {
   const [sortKey, setSortKey]     = useState<SortKey | null>(null);
   const [sortDir, setSortDir]     = useState<SortDir>("asc");
 
-  const fetchProperties = useCallback(async () => {
-    setLoadingList(true);
-    const res = await fetch("/api/properties");
-    if (res.ok) setProperties(await res.json());
-    setLoadingList(false);
-  }, []);
+  const queryClient = useQueryClient();
+  const { data: properties = [], isLoading: loadingList } = useQuery<Property[]>({
+    queryKey: ["admin-properties"],
+    queryFn: () => fetch("/api/properties").then((r) => r.json()),
+  });
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { fetchProperties(); }, [fetchProperties]);
+  const deleteMutation = useMutation({
+    mutationFn: (slug: string) =>
+      fetch(`/api/properties/${slug}`, { method: "DELETE" }).then((r) => r.json()),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-properties"] });
+      setToDelete(null);
+    },
+    onSettled: () => setDeleting(false),
+  });
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!toDelete) return;
     setDeleting(true);
-    const res = await fetch(`/api/properties/${toDelete.slug}`, { method: "DELETE" });
-    if (res.ok) setProperties((prev) => prev.filter((p) => p.slug !== toDelete.slug));
-    setDeleting(false);
-    setToDelete(null);
+    deleteMutation.mutate(toDelete.slug);
   };
 
   const handleToggleFeatured = (property: Property) => {
@@ -117,9 +119,7 @@ export default function PropertyList() {
       if (result.error) {
         setFeaturedError(result.error);
       } else {
-        setProperties((prev) =>
-          prev.map((p) => p.id === property.id ? { ...p, featured: !p.featured } : p)
-        );
+        queryClient.invalidateQueries({ queryKey: ["admin-properties"] });
       }
     });
   };
