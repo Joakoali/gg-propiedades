@@ -108,6 +108,9 @@ export default function PropertyList() {
       queryClient.invalidateQueries({ queryKey: ["admin-properties"] });
       setToDelete(null);
     },
+    onError: () => {
+      setToDelete(null);
+    },
   });
 
   const handleDelete = () => {
