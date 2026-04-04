@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Upload, X, ImageIcon } from "lucide-react";
 import Link from "next/link";
@@ -14,6 +15,29 @@ export default function NewPropertyPage() {
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const queryClient = useQueryClient();
+
+  const createMutation = useMutation({
+    mutationFn: (body: Record<string, unknown>) =>
+      fetch("/api/properties", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }).then((r) => {
+        if (!r.ok) throw new Error("create failed");
+        return r.json();
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-properties"] });
+      setLoading(false);
+      router.push("/admin");
+    },
+    onError: () => {
+      setError("Hubo un error al cargar la propiedad");
+      setLoading(false);
+    },
+  });
 
   const [form, setForm] = useState({
     title: "",
@@ -61,7 +85,7 @@ export default function NewPropertyPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    setUploadStatus("");
+    setUploadStatus(""); // This is needed before the mutation starts
 
     let imageUrls: string[] = [];
     if (images.length > 0) {
@@ -97,18 +121,7 @@ export default function NewPropertyPage() {
     }
 
     setUploadStatus("Guardando propiedad...");
-    const res = await fetch("/api/properties", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, images: imageUrls }),
-    });
-
-    if (res.ok) {
-      router.push("/admin");
-    } else {
-      setError("Hubo un error al cargar la propiedad");
-    }
-    setLoading(false);
+    createMutation.mutate({ ...form, images: imageUrls });
   }
 
   const inputClass = "w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 transition";
