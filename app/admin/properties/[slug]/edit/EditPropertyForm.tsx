@@ -30,6 +30,10 @@ export default function EditPropertyForm({ property }: { property: Property }) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
+  const [loading, setLoading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState("");
+  const [error, setError] = useState("");
+
   const saveMutation = useMutation({
     mutationFn: (body: Record<string, unknown>) =>
       fetch(`/api/properties/${property.slug}`, {
@@ -42,6 +46,7 @@ export default function EditPropertyForm({ property }: { property: Property }) {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-properties"] });
+      setLoading(false);
       router.push("/admin");
     },
     onError: () => {
@@ -50,9 +55,6 @@ export default function EditPropertyForm({ property }: { property: Property }) {
     },
   });
 
-  const [loading, setLoading] = useState(false);
-  const [uploadStatus, setUploadStatus] = useState("");
-  const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [existingImages, setExistingImages] = useState<string[]>(property.images);
