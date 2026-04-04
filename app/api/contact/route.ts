@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// ── Security helpers ──────────────────────────────────────────────────────────
-
-/** Escape HTML special chars to prevent XSS / HTML injection in emails */
 function esc(s: string): string {
   return s.replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] ?? c
@@ -15,7 +12,6 @@ const MAX_EMAIL = 254;
 const MAX_PHONE = 30;
 const MAX_MESSAGE = 5000;
 
-/** Simple in-memory rate limiter: max 5 requests per IP per hour */
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
 function isRateLimited(ip: string): boolean {
@@ -28,8 +24,6 @@ function isRateLimited(ip: string): boolean {
   entry.count++;
   return entry.count > 5;
 }
-
-// ── Resend email sender (compatible con Cloudflare Workers) ──────────────────
 
 async function sendEmail(opts: {
   from: string;
@@ -62,10 +56,7 @@ async function sendEmail(opts: {
   }
 }
 
-// ── API handler ───────────────────────────────────────────────────────────────
-
 export async function POST(req: NextRequest) {
-  // Rate limit
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   if (isRateLimited(ip)) {
     return NextResponse.json(
@@ -84,12 +75,10 @@ export async function POST(req: NextRequest) {
   const phone = body.phone ? String(body.phone).trim().slice(0, MAX_PHONE) : "";
   const message = String(body.message).trim().slice(0, MAX_MESSAGE);
 
-  // Validate email format
   if (!EMAIL_RE.test(email)) {
     return NextResponse.json({ error: "Email inválido." }, { status: 400 });
   }
 
-  // Reject injection attempts (newlines in header fields)
   if (/[\r\n]/.test(name) || /[\r\n]/.test(email) || /[\r\n]/.test(phone)) {
     return NextResponse.json({ error: "Entrada inválida." }, { status: 400 });
   }

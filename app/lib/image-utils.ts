@@ -1,20 +1,8 @@
-/**
- * Client-side image compression + direct-to-R2 upload via presigned URLs.
- * The Worker only generates lightweight signatures — file data never touches it.
- */
-
 const MAX_DIMENSION = 1920;
 const JPEG_QUALITY = 0.80;
 const CONCURRENT_UPLOADS = 3;
 
-/**
- * Compress an image file client-side before uploading.
- * - Resizes to max 1920px on the longest side
- * - Converts to JPEG at 80% quality
- * - Returns a new File object ready for upload
- */
-export async function compressImage(file: File): Promise<File> {
-  // If already small enough (< 500KB), skip compression
+async function compressImage(file: File): Promise<File> {
   if (file.size < 500 * 1024) {
     return file;
   }
@@ -45,14 +33,10 @@ export async function compressImage(file: File): Promise<File> {
     quality: JPEG_QUALITY,
   });
 
-  // Preserve original name but change extension
   const name = file.name.replace(/\.[^.]+$/, ".jpg");
   return new File([blob], name, { type: "image/jpeg" });
 }
 
-/**
- * Compress multiple images, with progress callback.
- */
 export async function compressImages(
   files: File[],
   onProgress?: (done: number, total: number) => void,
@@ -71,15 +55,11 @@ interface PresignedFile {
   contentType: string;
 }
 
-/**
- * Upload files using presigned URLs — files go directly to R2,
- * bypassing the Worker entirely. Only the presign request hits the Worker.
- */
 export async function uploadWithPresignedUrls(
   files: File[],
   onProgress?: (uploaded: number, total: number) => void,
 ): Promise<{ urls: string[]; errors: string[] }> {
-  // Step 1: Get presigned URLs from the Worker (lightweight, no file data)
+  // Obtener URLs firmadas del Worker
   const presignRes = await fetch("/api/upload/presign", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -96,12 +76,12 @@ export async function uploadWithPresignedUrls(
   const { files: presigned }: { files: PresignedFile[] } =
     await presignRes.json();
 
-  // Step 2: Upload each file directly to R2 (bypasses Worker)
+  // Subir cada archivo directo a R2
   const allUrls: string[] = [];
   const allErrors: string[] = [];
   let uploaded = 0;
 
-  // Upload with controlled concurrency
+  // Concurrencia controlada
   const queue = files.map((file, i) => ({ file, presigned: presigned[i] }));
   const executing: Promise<void>[] = [];
 
@@ -127,10 +107,10 @@ export async function uploadWithPresignedUrls(
 
     executing.push(task);
 
-    // Control concurrency: wait when we hit the limit
+    // Esperar cuando se alcanza el límite
     if (executing.length >= CONCURRENT_UPLOADS) {
       await Promise.race(executing);
-      // Remove resolved promises
+      // Remover promesas resueltas
       for (let i = executing.length - 1; i >= 0; i--) {
         const settled = await Promise.race([
           executing[i].then(() => true),
@@ -141,7 +121,7 @@ export async function uploadWithPresignedUrls(
     }
   }
 
-  // Wait for remaining uploads
+  // Esperar uploads restantes
   await Promise.all(executing);
 
   return { urls: allUrls, errors: allErrors };

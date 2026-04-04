@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BedDouble, Ruler, Trees, MapPin, Home } from "lucide-react";
 import { formatPrice, CATEGORY_LABELS } from "@/app/lib/utils";
 
-export interface PropertyCardData {
+interface PropertyCardData {
   id: string;
   slug: string;
   title: string;
@@ -23,7 +23,6 @@ export interface PropertyCardData {
 
 interface Props {
   property: PropertyCardData;
-  /** Show extra stats (lotArea) and feature tags. Default: false */
   detailed?: boolean;
 }
 

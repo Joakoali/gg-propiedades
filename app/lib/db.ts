@@ -1,14 +1,4 @@
-/**
- * Supabase client for Cloudflare Workers — HTTP-based, zero WebAssembly.
- *
- * Replaces Prisma to avoid the "Wasm code generation disallowed by embedder" error.
- * Requires two env vars:
- *   SUPABASE_URL            — e.g. https://<project>.supabase.co
- *   SUPABASE_SERVICE_ROLE_KEY — found in Supabase Dashboard → Settings → API
- */
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-
-// ── Property type (mirrors the Prisma model exactly) ────────────────────────
 
 export type Category = "houses" | "lots" | "local";
 
@@ -33,10 +23,6 @@ export interface Property {
   createdAt: string;
 }
 
-export type PropertyInsert = Omit<Property, "id" | "createdAt">;
-
-// ── Lazy singleton (safe for Cloudflare Workers) ────────────────────────────
-
 let _client: SupabaseClient | null = null;
 
 export function supabase(): SupabaseClient {
@@ -58,11 +44,7 @@ export function supabase(): SupabaseClient {
   return _client;
 }
 
-// ── Table name constant ─────────────────────────────────────────────────────
-// Prisma creates the table with the exact model name — "Property" (PascalCase).
 export const TABLE = "Property";
-
-// ── Simple ID generator (replaces Prisma's cuid()) ──────────────────────────
 
 export function generateId(): string {
   return crypto.randomUUID();

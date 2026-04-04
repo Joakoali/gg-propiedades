@@ -40,11 +40,6 @@
   --radius-2xl: 1.5rem;
 
   /* ── Animaciones ── */
-  --animate-fade-in:  fade-in 0.35s ease-out;
-  --animate-slide-up: slide-up 0.4s ease-out;
-  --animate-slide-down: slide-down 0.3s ease-out;
-  --animate-scale-in: scale-in 0.25s ease-out;
-
   @keyframes fade-in {
     from { opacity: 0; }
     to   { opacity: 1; }
@@ -66,13 +61,6 @@
 /* ── Utilidades custom ── */
 @utility section-container {
   @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-}
-
-@utility text-gradient-gold {
-  background: linear-gradient(135deg, oklch(72% 0.12 75), oklch(55% 0.12 75));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 @utility card-shadow {
@@ -139,7 +127,7 @@
 @media print {
   /* Ocultar navegación, botones, formularios */
   header, nav, footer, button, [role="button"],
-  form, .print-hide { display: none !important; }
+  form { display: none !important; }
 
   body { background: white !important; color: black !important; }
 

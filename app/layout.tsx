@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
-import { Playfair_Display } from "next/font/google";
+import { Geist, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Providers from "./components/Providers";

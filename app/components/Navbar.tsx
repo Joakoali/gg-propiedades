@@ -89,7 +89,6 @@ export default function Navbar() {
       >
         <div className="section-container">
           <div className="flex items-center justify-between h-16 lg:h-[72px]">
-            {/* Logo */}
             <Link href="/" className="flex items-center select-none">
               <Image
                 src={transparent ? NAVBAR_LOGOS.light : NAVBAR_LOGOS.dark}
@@ -101,7 +100,6 @@ export default function Navbar() {
               />
             </Link>
 
-            {/* Nav desktop */}
             <nav className="hidden lg:flex items-center gap-0.5">
               <Link
                 href="/"
@@ -115,7 +113,6 @@ export default function Navbar() {
                 Inicio
               </Link>
 
-              {/* Dropdown Propiedades */}
               <div ref={dropdownRef} className="relative">
                 <button
                   onClick={() => setDropdownOpen((v) => !v)}
@@ -171,7 +168,6 @@ export default function Navbar() {
               </Link>
             </nav>
 
-            {/* Redes sociales desktop — color de marca, blanco en hero */}
             <div className="hidden lg:flex items-center gap-3">
               {SOCIAL.map(({ icon: Icon, href, label, brandColor }) => (
                 <a
@@ -190,7 +186,6 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* Hamburger mobile */}
             <button
               onClick={() => setMobileOpen((v) => !v)}
               className="lg:hidden p-2.5 rounded-lg transition-colors"
@@ -205,7 +200,6 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* ══ Menú mobile ══ */}
       {mobileOpen && (
         <div className="fixed inset-0 z-40 bg-white flex flex-col pt-20 pb-8 px-8 overflow-y-auto animate-[fade-in_0.2s_ease-out]">
           <nav className="flex flex-col gap-1">
