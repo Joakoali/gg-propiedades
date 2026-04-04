@@ -38,7 +38,7 @@ const HOME_FEATURED_SELECT = [
 type Category = "houses" | "lots" | "local";
 type Sort = "" | "price_asc" | "price_desc" | "bedrooms";
 
-export interface PublicPropertyFilters {
+interface PublicPropertyFilters {
   category?: string;
   zone?: string;
   q?: string;
@@ -101,7 +101,7 @@ function parsePositiveInt(value?: string): number | null {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
 }
 
-export function normalizePublicFilters(
+function normalizePublicFilters(
   filters: PublicPropertyFilters,
 ): NormalizedFilters {
   return {
@@ -214,10 +214,6 @@ export async function getCachedHomeData() {
     ["public-home-data"],
     { revalidate: 1800, tags: ["properties"] },
   )();
-}
-
-export async function getCachedZones(): Promise<string[]> {
-  return ZONES;
 }
 
 export async function getCachedPropertyList(

@@ -3,11 +3,8 @@ export const revalidate = 1800;
 import { Suspense } from "react";
 import { Home, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { CATEGORY_LABELS } from "@/app/lib/utils";
-import {
-  getCachedPropertyList,
-  getCachedZones,
-} from "@/app/lib/public-properties";
+import { CATEGORY_LABELS, ZONES } from "@/app/lib/utils";
+import { getCachedPropertyList } from "@/app/lib/public-properties";
 import Filters from "./Filters";
 import PropertyCard from "@/app/components/PropertyCard";
 
@@ -49,24 +46,22 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
 
   const currentPage = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
 
-  const [listData, zoneList] = await Promise.all([
-    getCachedPropertyList(
-      {
-        category,
-        zone,
-        q,
-        minPrice,
-        maxPrice,
-        minBedrooms,
-        pool,
-        financing,
-        mortgageEligible,
-        sort,
-      },
-      currentPage,
-    ),
-    getCachedZones(),
-  ]);
+  const listData = await getCachedPropertyList(
+    {
+      category,
+      zone,
+      q,
+      minPrice,
+      maxPrice,
+      minBedrooms,
+      pool,
+      financing,
+      mortgageEligible,
+      sort,
+    },
+    currentPage,
+  );
+  const zoneList = ZONES;
 
   const { properties, totalCount, totalPages } = listData;
 

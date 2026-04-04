@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Pencil, Trash2, X, Star, Search, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { toggleFeatured } from "@/app/actions/featured";
-import { MAX_FEATURED } from "@/app/lib/utils";
+import { CATEGORY_LABELS, MAX_FEATURED } from "@/app/lib/utils";
 
 interface Property {
   id: string;
@@ -19,12 +19,6 @@ interface Property {
   featured: boolean;
   bedrooms: number | null;
 }
-
-const CATEGORY_LABELS: Record<string, string> = {
-  houses: "Casa",
-  lots:   "Terreno",
-  local:  "Local",
-};
 
 type SortKey   = "title" | "category" | "price" | "zone";
 type SortDir   = "asc" | "desc";
