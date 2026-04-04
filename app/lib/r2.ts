@@ -1,4 +1,12 @@
+/**
+ * Cloudflare R2 upload utility — AWS SigV4 via Web Crypto API.
+ * R2 is S3-compatible, region = "auto".
+ * Uses crypto.subtle (native in Workers) — no node:crypto needed.
+ */
+
 const BUCKET = "propiedades";
+
+// ── Web Crypto helpers ────────────────────────────────────────────────────────
 
 const enc = new TextEncoder();
 
@@ -27,7 +35,8 @@ async function sha256Hex(data: string): Promise<string> {
   return toHex(buf);
 }
 
-// Cache de signing key (se renueva diariamente)
+// ── Signing key cache (renewed daily, once per cold start then 1 HMAC op per file) ───
+
 let _signingKeyCache: { dateStamp: string; key: CryptoKey } | null = null;
 
 async function deriveSigningKey(
@@ -61,6 +70,8 @@ function encodePath(key: string): string {
     .map((s) => encodeURIComponent(s))
     .join("/");
 }
+
+// ── Presigned PUT URL ─────────────────────────────────────────────────────
 
 export async function generatePresignedPutUrl(
   key: string,
