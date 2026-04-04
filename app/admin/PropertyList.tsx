@@ -79,7 +79,6 @@ function SortHeader({ label, sortKey, current, dir, onClick }: {
 export default function PropertyList() {
   const router = useRouter();
   const [toDelete, setToDelete]         = useState<Property | null>(null);
-  const [deleting, setDeleting]         = useState(false);
   const [featuredError, setFeaturedError] = useState<string | null>(null);
   const [isPending, startTransition]    = useTransition();
 
@@ -93,22 +92,26 @@ export default function PropertyList() {
   const queryClient = useQueryClient();
   const { data: properties = [], isLoading: loadingList } = useQuery<Property[]>({
     queryKey: ["admin-properties"],
-    queryFn: () => fetch("/api/properties").then((r) => r.json()),
+    queryFn: () => fetch("/api/properties").then((r) => {
+      if (!r.ok) throw new Error("fetch failed");
+      return r.json();
+    }),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (slug: string) =>
-      fetch(`/api/properties/${slug}`, { method: "DELETE" }).then((r) => r.json()),
+      fetch(`/api/properties/${slug}`, { method: "DELETE" }).then((r) => {
+        if (!r.ok) throw new Error("delete failed");
+        return r.json();
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-properties"] });
       setToDelete(null);
     },
-    onSettled: () => setDeleting(false),
   });
 
   const handleDelete = () => {
     if (!toDelete) return;
-    setDeleting(true);
     deleteMutation.mutate(toDelete.slug);
   };
 
@@ -168,7 +171,7 @@ export default function PropertyList() {
   return (
     <>
       {toDelete && (
-        <DeleteDialog title={toDelete.title} onConfirm={handleDelete} onCancel={() => setToDelete(null)} loading={deleting} />
+        <DeleteDialog title={toDelete.title} onConfirm={handleDelete} onCancel={() => setToDelete(null)} loading={deleteMutation.isPending} />
       )}
 
       {/* ── Barra de búsqueda y filtros ── */}
