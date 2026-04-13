@@ -30,6 +30,7 @@ export default function NewPropertyPage() {
     financing: false,
     mortgageEligible: false,
     featured: false,
+    featuredOrder: "",
   });
 
   const queryClient = useQueryClient();
@@ -119,7 +120,13 @@ export default function NewPropertyPage() {
     }
 
     setUploadStatus("Guardando propiedad...");
-    createMutation.mutate({ ...form, images: imageUrls });
+    createMutation.mutate({
+      ...form,
+      featuredOrder: form.featured && form.featuredOrder !== ""
+        ? parseInt(form.featuredOrder, 10)
+        : null,
+      images: imageUrls,
+    });
   }
 
   const inputClass = "w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 transition";
@@ -433,6 +440,25 @@ export default function NewPropertyPage() {
                 </label>
               ))}
             </div>
+            {form.featured && (
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="featuredOrder" className={labelClass} style={{ color: "var(--color-muted-foreground)" }}>
+                  Posición en hero (1–9)
+                </label>
+                <input
+                  id="featuredOrder"
+                  name="featuredOrder"
+                  type="number"
+                  min={1}
+                  max={9}
+                  placeholder="Ej: 1"
+                  value={form.featuredOrder}
+                  onChange={handleChange}
+                  className={inputClass}
+                  style={{ borderColor: "var(--color-border)" }}
+                />
+              </div>
+            )}
           </div>
 
           {/* Submit */}

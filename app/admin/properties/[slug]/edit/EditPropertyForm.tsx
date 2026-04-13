@@ -24,6 +24,7 @@ interface Property {
   financing: boolean;
   mortgageEligible: boolean;
   featured: boolean;
+  featuredOrder: number | null;
 }
 
 export default function EditPropertyForm({ property }: { property: Property }) {
@@ -76,6 +77,7 @@ export default function EditPropertyForm({ property }: { property: Property }) {
     financing: property.financing,
     mortgageEligible: property.mortgageEligible,
     featured: property.featured,
+    featuredOrder: property.featuredOrder?.toString() ?? "",
   });
 
   const handleChange = (
@@ -145,7 +147,13 @@ export default function EditPropertyForm({ property }: { property: Property }) {
 
     setUploadStatus("Guardando...");
     const finalImages = [...existingImages, ...uploadedUrls];
-    saveMutation.mutate({ ...form, images: finalImages });
+    saveMutation.mutate({
+      ...form,
+      featuredOrder: form.featured && form.featuredOrder !== ""
+        ? parseInt(form.featuredOrder, 10)
+        : null,
+      images: finalImages,
+    });
   }
 
   const totalImages = existingImages.length + newPreviews.length;
@@ -354,6 +362,25 @@ export default function EditPropertyForm({ property }: { property: Property }) {
                 </label>
               ))}
             </div>
+            {form.featured && (
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="featuredOrder" className={labelClass} style={{ color: "var(--color-muted-foreground)" }}>
+                  Posición en hero (1–9)
+                </label>
+                <input
+                  id="featuredOrder"
+                  name="featuredOrder"
+                  type="number"
+                  min={1}
+                  max={9}
+                  placeholder="Ej: 1"
+                  value={form.featuredOrder}
+                  onChange={handleChange}
+                  className={inputClass}
+                  style={{ borderColor: "var(--color-border)" }}
+                />
+              </div>
+            )}
           </div>
 
           {error && (
