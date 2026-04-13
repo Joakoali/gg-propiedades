@@ -1,6 +1,6 @@
-import { unstable_cache } from "next/cache";
+// app/lib/public-properties.ts
 import { supabase, TABLE, type Property } from "@/app/lib/db";
-import { CROSS_ZONE_NEIGHBORHOODS, ZONE_FILTER_MAP, ZONES } from "@/app/lib/utils";
+import { CROSS_ZONE_NEIGHBORHOODS, ZONE_FILTER_MAP } from "@/app/lib/utils";
 
 export const PUBLIC_PAGE_SIZE = 12;
 
@@ -128,10 +128,6 @@ function normalizePublicFilters(
   };
 }
 
-function serializeFilters(filters: NormalizedFilters): string {
-  return JSON.stringify(filters);
-}
-
 function applyFilters(query: FilterQuery, filters: NormalizedFilters) {
   let nextQuery = query;
 
@@ -178,45 +174,39 @@ function applySort(query: FilterQuery, sort: Sort) {
     .order("createdAt", { ascending: false });
 }
 
-export async function getCachedHomeData() {
-  return unstable_cache(
-    async () => {
-      const db = supabase();
-      const [featuredRes, countRes] = await Promise.all([
-        db
-          .from(TABLE)
-          .select(HOME_FEATURED_SELECT)
-          .eq("featured", true)
-          .order("createdAt", { ascending: false })
-          .limit(9),
-        db.from(TABLE).select("id", { count: "exact", head: true }),
-      ]);
+export async function getHomeData() {
+  const db = supabase();
+  const [featuredRes, countRes] = await Promise.all([
+    db
+      .from(TABLE)
+      .select(HOME_FEATURED_SELECT)
+      .eq("featured", true)
+      .order("createdAt", { ascending: false })
+      .limit(9),
+    db.from(TABLE).select("id", { count: "exact", head: true }),
+  ]);
 
-      return {
-        featured: (featuredRes.data ?? []) as unknown as Array<
-          Pick<
-            Property,
-            | "id"
-            | "slug"
-            | "title"
-            | "price"
-            | "images"
-            | "neighborhood"
-            | "zone"
-            | "bedrooms"
-            | "coveredArea"
-            | "category"
-          >
-        >,
-        totalProperties: countRes.count ?? 0,
-      };
-    },
-    ["public-home-data"],
-    { revalidate: 1800, tags: ["properties"] },
-  )();
+  return {
+    featured: (featuredRes.data ?? []) as unknown as Array<
+      Pick<
+        Property,
+        | "id"
+        | "slug"
+        | "title"
+        | "price"
+        | "images"
+        | "neighborhood"
+        | "zone"
+        | "bedrooms"
+        | "coveredArea"
+        | "category"
+      >
+    >,
+    totalProperties: countRes.count ?? 0,
+  };
 }
 
-export async function getCachedPropertyList(
+export async function getPropertyList(
   rawFilters: PublicPropertyFilters,
   page: number,
 ) {
@@ -225,88 +215,66 @@ export async function getCachedPropertyList(
   const from = (currentPage - 1) * PUBLIC_PAGE_SIZE;
   const to = from + PUBLIC_PAGE_SIZE - 1;
 
-  return unstable_cache(
-    async () => {
-      const db = supabase();
-      const propertiesQuery = applySort(
-        applyFilters(
-          db.from(TABLE).select(PROPERTY_CARD_SELECT) as unknown as FilterQuery,
-          filters,
-        ),
-        filters.sort,
-      );
-      const countQuery = applyFilters(
-        db.from(TABLE).select("id", { count: "exact", head: true }) as unknown as FilterQuery,
-        filters,
-      );
+  const db = supabase();
+  const propertiesQuery = applySort(
+    applyFilters(
+      db.from(TABLE).select(PROPERTY_CARD_SELECT) as unknown as FilterQuery,
+      filters,
+    ),
+    filters.sort,
+  );
+  const countQuery = applyFilters(
+    db.from(TABLE).select("id", { count: "exact", head: true }) as unknown as FilterQuery,
+    filters,
+  );
 
-      const [propertiesRes, countRes] = await Promise.all([
-        propertiesQuery.range(from, to) as Promise<{
-          data: unknown[] | null;
-        }>,
-        countQuery as unknown as Promise<{
-          count: number | null;
-        }>,
-      ]);
+  const [propertiesRes, countRes] = await Promise.all([
+    propertiesQuery.range(from, to) as Promise<{ data: unknown[] | null }>,
+    countQuery as unknown as Promise<{ count: number | null }>,
+  ]);
 
-      const totalCount = countRes.count ?? 0;
+  const totalCount = countRes.count ?? 0;
 
-      return {
-        properties: (propertiesRes.data ?? []) as unknown as Array<
-          Pick<
-            Property,
-            | "id"
-            | "slug"
-            | "title"
-            | "price"
-            | "images"
-            | "neighborhood"
-            | "zone"
-            | "bedrooms"
-            | "coveredArea"
-            | "lotArea"
-            | "featured"
-            | "category"
-            | "pool"
-            | "financing"
-            | "mortgageEligible"
-          >
-        >,
-        totalCount,
-        totalPages: Math.max(1, Math.ceil(totalCount / PUBLIC_PAGE_SIZE)),
-      };
-    },
-    ["public-property-list", serializeFilters(filters), String(currentPage)],
-    { revalidate: 1800, tags: ["properties"] },
-  )();
+  return {
+    properties: (propertiesRes.data ?? []) as unknown as Array<
+      Pick<
+        Property,
+        | "id"
+        | "slug"
+        | "title"
+        | "price"
+        | "images"
+        | "neighborhood"
+        | "zone"
+        | "bedrooms"
+        | "coveredArea"
+        | "lotArea"
+        | "featured"
+        | "category"
+        | "pool"
+        | "financing"
+        | "mortgageEligible"
+      >
+    >,
+    totalCount,
+    totalPages: Math.max(1, Math.ceil(totalCount / PUBLIC_PAGE_SIZE)),
+  };
 }
 
-export async function getCachedPropertyBySlug(slug: string) {
-  return unstable_cache(
-    async () => {
-      const { data } = await supabase()
-        .from(TABLE)
-        .select("*")
-        .eq("slug", slug)
-        .single();
+export async function getPropertyBySlug(slug: string) {
+  const { data } = await supabase()
+    .from(TABLE)
+    .select("*")
+    .eq("slug", slug)
+    .single();
 
-      return (data as Property | null) ?? null;
-    },
-    ["public-property-detail", slug],
-    { revalidate: 3600, tags: ["properties", `property:${slug}`] },
-  )();
+  return (data as Property | null) ?? null;
 }
 
-export async function getCachedPropertySlugs() {
-  return unstable_cache(
-    async () => {
-      const { data } = await supabase()
-        .from(TABLE)
-        .select("slug, createdAt");
+export async function getPropertySlugs() {
+  const { data } = await supabase()
+    .from(TABLE)
+    .select("slug, createdAt");
 
-      return (data ?? []) as Array<Pick<Property, "slug" | "createdAt">>;
-    },
-    ["public-property-slugs"],
-    { revalidate: 3600, tags: ["properties"] },
-  )();
+  return (data ?? []) as Array<Pick<Property, "slug" | "createdAt">>;
 }
