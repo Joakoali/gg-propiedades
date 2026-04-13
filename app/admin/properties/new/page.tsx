@@ -2,18 +2,143 @@
 import { useState, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Upload, X, ImageIcon } from "lucide-react";
+import { ArrowLeft, Upload, X, ImageIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  rectSortingStrategy,
+  arrayMove,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import Link from "next/link";
 import { ZONES } from "@/app/lib/utils";
 import { compressImages, uploadWithPresignedUrls } from "@/app/lib/image-utils";
+
+interface PhotoItem {
+  id: string;
+  file: File;
+  preview: string;
+}
+
+function SortablePhoto({
+  item,
+  isFirst,
+  onRemove,
+  onMoveLeft,
+  onMoveRight,
+  showLeft,
+  showRight,
+}: {
+  item: PhotoItem;
+  isFirst: boolean;
+  onRemove: () => void;
+  onMoveLeft: () => void;
+  onMoveRight: () => void;
+  showLeft: boolean;
+  showRight: boolean;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: item.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="relative group rounded-xl overflow-hidden touch-none select-none"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={item.preview} alt="" className="w-full h-24 object-cover" />
+
+      {/* Drag handle overlay (desktop) */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute inset-0 cursor-grab active:cursor-grabbing hidden sm:block"
+      />
+
+      {/* Remove button */}
+      <button
+        type="button"
+        onClick={onRemove}
+        className="absolute top-1.5 right-1.5 size-6 bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition z-10"
+      >
+        <X size={12} />
+      </button>
+
+      {/* Principal badge */}
+      {isFirst && (
+        <span
+          className="absolute bottom-1.5 left-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full z-10 pointer-events-none"
+          style={{ background: "var(--color-gold)", color: "white" }}
+        >
+          Principal
+        </span>
+      )}
+
+      {/* Mobile move buttons */}
+      <div className="absolute bottom-1.5 right-1.5 flex gap-1 sm:hidden z-10">
+        {showLeft && (
+          <button
+            type="button"
+            onClick={onMoveLeft}
+            className="size-5 rounded flex items-center justify-center text-white"
+            style={{ background: "rgba(0,0,0,0.6)" }}
+          >
+            <ChevronLeft size={10} />
+          </button>
+        )}
+        {showRight && (
+          <button
+            type="button"
+            onClick={onMoveRight}
+            className="size-5 rounded flex items-center justify-center text-white"
+            style={{ background: "rgba(0,0,0,0.6)" }}
+          >
+            <ChevronRight size={10} />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function NewPropertyPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState("");
   const [error, setError] = useState("");
-  const [images, setImages] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
+  const [displayItems, setDisplayItems] = useState<PhotoItem[]>([]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setDisplayItems((items) => {
+        const oldIndex = items.findIndex((i) => i.id === active.id);
+        const newIndex = items.findIndex((i) => i.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     title: "",
@@ -69,15 +194,18 @@ export default function NewPropertyPage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
-    setImages((prev) => [...prev, ...files]);
-    const newPreviews = files.map((f) => URL.createObjectURL(f));
-    setPreviews((prev) => [...prev, ...newPreviews]);
+    const newItems: PhotoItem[] = files.map((file) => ({
+      id: `${Date.now()}-${Math.random()}`,
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setDisplayItems((prev) => [...prev, ...newItems]);
   };
 
-  const removeImage = (index: number) => {
-    URL.revokeObjectURL(previews[index]);
-    setImages((prev) => prev.filter((_, i) => i !== index));
-    setPreviews((prev) => prev.filter((_, i) => i !== index));
+  const removeImage = (id: string) => {
+    const item = displayItems.find((i) => i.id === id);
+    if (item) URL.revokeObjectURL(item.preview);
+    setDisplayItems((prev) => prev.filter((i) => i.id !== id));
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -88,14 +216,14 @@ export default function NewPropertyPage() {
     setUploadStatus("");
 
     let imageUrls: string[] = [];
-    if (images.length > 0) {
-      // Step 1: Compress images client-side
+    if (displayItems.length > 0) {
       setUploadStatus("Comprimiendo imágenes...");
       let compressed: File[];
       try {
-        compressed = await compressImages(images, (done, total) => {
-          setUploadStatus(`Comprimiendo ${done}/${total}...`);
-        });
+        compressed = await compressImages(
+          displayItems.map((i) => i.file),
+          (done, total) => { setUploadStatus(`Comprimiendo ${done}/${total}...`); },
+        );
       } catch {
         setError("Error al comprimir las imágenes");
         setLoading(false);
@@ -377,38 +505,43 @@ export default function NewPropertyPage() {
               />
             </div>
 
-            {previews.length > 0 && (
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                {previews.map((src, i) => (
-                  <div key={i} className="relative group rounded-xl overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={src}
-                      alt={`preview-${i}`}
-                      className="w-full h-24 object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(i)}
-                      className="absolute top-1.5 right-1.5 size-6 bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
-                    >
-                      <X size={12} />
-                    </button>
-                    {i === 0 && (
-                      <span className="absolute bottom-1.5 left-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--color-gold)", color: "white" }}>
-                        Principal
-                      </span>
-                    )}
-                  </div>
-                ))}
-                <div
-                  className="border-2 border-dashed rounded-xl h-24 flex items-center justify-center cursor-pointer transition-colors"
-                  style={{ borderColor: "var(--color-border)" }}
-                  onClick={() => fileInputRef.current?.click()}
+            {displayItems.length > 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={displayItems.map((i) => i.id)}
+                  strategy={rectSortingStrategy}
                 >
-                  <ImageIcon size={20} style={{ color: "var(--color-muted-foreground)" }} />
-                </div>
-              </div>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                    {displayItems.map((item, index) => (
+                      <SortablePhoto
+                        key={item.id}
+                        item={item}
+                        isFirst={index === 0}
+                        onRemove={() => removeImage(item.id)}
+                        onMoveLeft={() =>
+                          setDisplayItems((items) => arrayMove(items, index, index - 1))
+                        }
+                        onMoveRight={() =>
+                          setDisplayItems((items) => arrayMove(items, index, index + 1))
+                        }
+                        showLeft={index > 0}
+                        showRight={index < displayItems.length - 1}
+                      />
+                    ))}
+                    <div
+                      className="border-2 border-dashed rounded-xl h-24 flex items-center justify-center cursor-pointer transition-colors"
+                      style={{ borderColor: "var(--color-border)" }}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <ImageIcon size={20} style={{ color: "var(--color-muted-foreground)" }} />
+                    </div>
+                  </div>
+                </SortableContext>
+              </DndContext>
             )}
           </div>
 
