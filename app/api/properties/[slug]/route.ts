@@ -1,6 +1,5 @@
 import { supabase, TABLE } from "@/app/lib/db";
 import { NextResponse } from "next/server";
-import { revalidateTag } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth-options";
 
@@ -10,9 +9,8 @@ function unauthorized() {
   return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 }
 
-function revalidatePublicPropertyData(slug: string) {
-  revalidateTag("properties", "max");
-  revalidateTag(`property:${slug}`, "max");
+function revalidatePublicPropertyData(_slug: string) {
+  // revalidation handled by page-level revalidate = 60
 }
 
 /** Only allow HTTPS image URLs from known domains */

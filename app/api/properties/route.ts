@@ -1,6 +1,5 @@
 import { supabase, TABLE, generateId } from "@/app/lib/db";
 import { NextResponse } from "next/server";
-import { revalidateTag } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth-options";
 
@@ -22,7 +21,7 @@ function unauthorized() {
 }
 
 function revalidatePublicPropertyData() {
-  revalidateTag("properties", "max");
+  // revalidation handled by page-level revalidate = 60
 }
 
 /** Only allow HTTPS image URLs from known domains */

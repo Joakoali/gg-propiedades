@@ -1,6 +1,5 @@
 "use server";
 import { supabase, TABLE } from "@/app/lib/db";
-import { revalidateTag } from "next/cache";
 import { MAX_FEATURED } from "@/app/lib/utils";
 
 export async function toggleFeatured(id: string, currentFeatured: boolean) {
@@ -37,8 +36,6 @@ export async function toggleFeatured(id: string, currentFeatured: boolean) {
 
     if (error) return { error: "Error al actualizar." };
   }
-
-  revalidateTag("properties", "fetch");
 
   return { success: true };
 }
