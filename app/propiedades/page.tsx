@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { Home, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { CATEGORY_LABELS, ZONES } from "@/app/lib/utils";
-import { getCachedPropertyList } from "@/app/lib/public-properties";
+import { getPropertyList } from "@/app/lib/public-properties";
 import Filters from "./Filters";
 import PropertyCard from "@/app/components/PropertyCard";
 
@@ -46,7 +46,7 @@ export default async function PropiedadesPage({ searchParams }: PageProps) {
 
   const currentPage = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
 
-  const listData = await getCachedPropertyList(
+  const listData = await getPropertyList(
     {
       category,
       zone,

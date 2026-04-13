@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, BedDouble, Ruler, Trees, MapPin, Star } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { supabase, TABLE } from "@/app/lib/db";
-import { getCachedPropertyBySlug } from "@/app/lib/public-properties";
+import { getPropertyBySlug } from "@/app/lib/public-properties";
 import { formatPrice, CATEGORY_LABELS } from "@/app/lib/utils";
 import Gallery from "./Gallery";
 import ShareButton from "./ShareButton";
@@ -25,7 +25,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const property = await getCachedPropertyBySlug(slug);
+  const property = await getPropertyBySlug(slug);
   if (!property) return {};
 
   const location = [property.neighborhood, property.zone]
@@ -65,7 +65,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PropertyDetailPage({ params }: Props) {
   const { slug } = await params;
-  const property = await getCachedPropertyBySlug(slug);
+  const property = await getPropertyBySlug(slug);
 
   if (!property) notFound();
 

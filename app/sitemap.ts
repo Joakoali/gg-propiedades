@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { getCachedPropertySlugs } from "@/app/lib/public-properties";
+import { getPropertySlugs } from "@/app/lib/public-properties";
 
 const BASE_URL = "https://ggpropiedades.com";
 export const revalidate = 3600;
@@ -28,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Páginas dinámicas: una por cada propiedad
-  const properties = await getCachedPropertySlugs();
+  const properties = await getPropertySlugs();
 
   const propertyPages: MetadataRoute.Sitemap = (properties ?? []).map(
     (p: { slug: string; createdAt: string }) => ({

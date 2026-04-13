@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import HeroCarousel from "@/app/components/HeroCarousel";
 import PropertyCard from "@/app/components/PropertyCard";
-import { getCachedHomeData } from "@/app/lib/public-properties";
+import { getHomeData } from "@/app/lib/public-properties";
 import { ZONES } from "@/app/lib/utils";
 import {
   ShieldCheck,
@@ -46,7 +46,7 @@ const FEATURES = [
 ];
 
 export default async function HomePage() {
-  const { featured, totalProperties } = await getCachedHomeData();
+  const { featured, totalProperties } = await getHomeData();
 
   const STATS = [
     { value: `${totalProperties}+`, label: "Propiedades activas" },
