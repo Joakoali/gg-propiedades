@@ -2,10 +2,26 @@
 import { useState, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Upload, X, ImageIcon } from "lucide-react";
+import { ArrowLeft, Upload, X, ImageIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { ZONES } from "@/app/lib/utils";
 import { compressImages, uploadWithPresignedUrls } from "@/app/lib/image-utils";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  rectSortingStrategy,
+  arrayMove,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface Property {
   slug: string;
@@ -25,6 +41,109 @@ interface Property {
   mortgageEligible: boolean;
   featured: boolean;
   featuredOrder: number | null;
+}
+
+type ExistingItem = { type: "existing"; id: string; url: string };
+type NewItem = { type: "new"; id: string; file: File; preview: string };
+type DisplayItem = ExistingItem | NewItem;
+
+function SortablePhoto({
+  item,
+  isFirst,
+  onRemove,
+  onMoveLeft,
+  onMoveRight,
+  showLeft,
+  showRight,
+}: {
+  item: DisplayItem;
+  isFirst: boolean;
+  onRemove: () => void;
+  onMoveLeft: () => void;
+  onMoveRight: () => void;
+  showLeft: boolean;
+  showRight: boolean;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: item.id });
+
+  const src = item.type === "existing" ? item.url : item.preview;
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="relative group rounded-xl overflow-hidden touch-none select-none"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt="" className="w-full h-24 object-cover" />
+
+      {/* Drag handle overlay (desktop) */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute inset-0 cursor-grab active:cursor-grabbing hidden sm:block"
+      />
+
+      {/* Remove button */}
+      <button
+        type="button"
+        onClick={onRemove}
+        className="absolute top-1.5 right-1.5 size-6 bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition z-10"
+      >
+        <X size={12} />
+      </button>
+
+      {/* Principal badge */}
+      {isFirst && (
+        <span
+          className="absolute bottom-1.5 left-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full z-10 pointer-events-none"
+          style={{ background: "var(--color-gold)", color: "white" }}
+        >
+          Principal
+        </span>
+      )}
+
+      {/* New badge */}
+      {item.type === "new" && (
+        <span
+          className="absolute top-1.5 left-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full z-10 pointer-events-none"
+          style={{ background: "oklch(60% 0.15 145)", color: "white" }}
+        >
+          Nueva
+        </span>
+      )}
+
+      {/* Mobile move buttons */}
+      <div className="absolute bottom-1.5 right-1.5 flex gap-1 sm:hidden z-10">
+        {showLeft && (
+          <button
+            type="button"
+            onClick={onMoveLeft}
+            className="size-5 rounded flex items-center justify-center text-white"
+            style={{ background: "rgba(0,0,0,0.6)" }}
+          >
+            <ChevronLeft size={10} />
+          </button>
+        )}
+        {showRight && (
+          <button
+            type="button"
+            onClick={onMoveRight}
+            className="size-5 rounded flex items-center justify-center text-white"
+            style={{ background: "rgba(0,0,0,0.6)" }}
+          >
+            <ChevronRight size={10} />
+          </button>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default function EditPropertyForm({ property }: { property: Property }) {
@@ -58,9 +177,29 @@ export default function EditPropertyForm({ property }: { property: Property }) {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [existingImages, setExistingImages] = useState<string[]>(property.images);
-  const [newFiles, setNewFiles] = useState<File[]>([]);
-  const [newPreviews, setNewPreviews] = useState<string[]>([]);
+  const [displayItems, setDisplayItems] = useState<DisplayItem[]>(
+    property.images.map((url, i) => ({
+      type: "existing" as const,
+      id: `existing-${i}-${url.slice(-8)}`,
+      url,
+    })),
+  );
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setDisplayItems((items) => {
+        const oldIndex = items.findIndex((i) => i.id === active.id);
+        const newIndex = items.findIndex((i) => i.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
 
   const [form, setForm] = useState({
     title: property.title,
@@ -90,22 +229,23 @@ export default function EditPropertyForm({ property }: { property: Property }) {
     }));
   };
 
-  const removeExistingImage = (index: number) => {
-    setExistingImages((prev) => prev.filter((_, i) => i !== index));
+  const removeItem = (id: string) => {
+    const item = displayItems.find((i) => i.id === id);
+    if (item?.type === "new") URL.revokeObjectURL(item.preview);
+    setDisplayItems((prev) => prev.filter((i) => i.id !== id));
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleNewFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
-    setNewFiles((prev) => [...prev, ...files]);
-    setNewPreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
-  };
-
-  const removeNewFile = (index: number) => {
-    URL.revokeObjectURL(newPreviews[index]);
-    setNewFiles((prev) => prev.filter((_, i) => i !== index));
-    setNewPreviews((prev) => prev.filter((_, i) => i !== index));
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    const newItems: NewItem[] = files.map((file) => ({
+      type: "new" as const,
+      id: `new-${Date.now()}-${Math.random()}`,
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setDisplayItems((prev) => [...prev, ...newItems]);
   };
 
   async function handleSubmit(e: React.FormEvent) {
@@ -114,14 +254,17 @@ export default function EditPropertyForm({ property }: { property: Property }) {
     setError("");
     setUploadStatus("");
 
+    // Upload new files in display order
+    const newItems = displayItems.filter((i): i is NewItem => i.type === "new");
     let uploadedUrls: string[] = [];
-    if (newFiles.length > 0) {
+    if (newItems.length > 0) {
       setUploadStatus("Comprimiendo imágenes...");
       let compressed: File[];
       try {
-        compressed = await compressImages(newFiles, (done, total) => {
-          setUploadStatus(`Comprimiendo ${done}/${total}...`);
-        });
+        compressed = await compressImages(
+          newItems.map((i) => i.file),
+          (done, total) => { setUploadStatus(`Comprimiendo ${done}/${total}...`); },
+        );
       } catch {
         setError("Error al comprimir las imágenes");
         setLoading(false);
@@ -145,8 +288,16 @@ export default function EditPropertyForm({ property }: { property: Property }) {
       }
     }
 
+    // Assemble final images in display order
+    let newUrlIndex = 0;
+    const finalImages = displayItems
+      .map((item) => {
+        if (item.type === "existing") return item.url;
+        return uploadedUrls[newUrlIndex++] ?? null;
+      })
+      .filter(Boolean) as string[];
+
     setUploadStatus("Guardando...");
-    const finalImages = [...existingImages, ...uploadedUrls];
     saveMutation.mutate({
       ...form,
       featuredOrder: form.featured && form.featuredOrder !== ""
@@ -156,7 +307,6 @@ export default function EditPropertyForm({ property }: { property: Property }) {
     });
   }
 
-  const totalImages = existingImages.length + newPreviews.length;
   const inputClass = "w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 transition";
   const labelClass = "block text-xs font-semibold uppercase tracking-wide mb-1.5";
 
@@ -284,40 +434,54 @@ export default function EditPropertyForm({ property }: { property: Property }) {
           {/* Imágenes */}
           <div className="bg-white rounded-2xl p-6 card-shadow flex flex-col gap-4">
             <h2 className="font-display text-base font-bold border-b pb-3" style={{ borderColor: "var(--color-border)" }}>
-              Imágenes{totalImages > 0 && <span className="text-sm font-normal ml-1.5" style={{ color: "var(--color-muted-foreground)" }}>({totalImages})</span>}
+              Imágenes{displayItems.length > 0 && (
+                <span className="text-sm font-normal ml-1.5" style={{ color: "var(--color-muted-foreground)" }}>
+                  ({displayItems.length})
+                </span>
+              )}
             </h2>
 
-            {existingImages.length > 0 && (
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: "var(--color-muted-foreground)" }}>Fotos actuales</p>
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                  {existingImages.map((src, i) => (
-                    <div key={src} className="relative group rounded-xl overflow-hidden">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={src} alt={`foto-${i + 1}`} className="w-full h-24 object-cover" />
-                      <button type="button" onClick={() => removeExistingImage(i)} className="absolute top-1.5 right-1.5 size-6 bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                        <X size={12} />
-                      </button>
+            {displayItems.length > 0 ? (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={displayItems.map((i) => i.id)}
+                  strategy={rectSortingStrategy}
+                >
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                    {displayItems.map((item, index) => (
+                      <SortablePhoto
+                        key={item.id}
+                        item={item}
+                        isFirst={index === 0}
+                        onRemove={() => removeItem(item.id)}
+                        onMoveLeft={() =>
+                          setDisplayItems((items) => arrayMove(items, index, index - 1))
+                        }
+                        onMoveRight={() =>
+                          setDisplayItems((items) => arrayMove(items, index, index + 1))
+                        }
+                        showLeft={index > 0}
+                        showRight={index < displayItems.length - 1}
+                      />
+                    ))}
+                    <div
+                      className="border-2 border-dashed rounded-xl h-24 flex items-center justify-center cursor-pointer transition-colors"
+                      style={{ borderColor: "var(--color-border)" }}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <ImageIcon size={20} style={{ color: "var(--color-muted-foreground)" }} />
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {newPreviews.length > 0 && (
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: "var(--color-muted-foreground)" }}>Fotos nuevas</p>
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                  {newPreviews.map((src, i) => (
-                    <div key={i} className="relative group rounded-xl overflow-hidden border-2 border-dashed" style={{ borderColor: "var(--color-gold)" }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={src} alt={`nueva-${i + 1}`} className="w-full h-24 object-cover" />
-                      <button type="button" onClick={() => removeNewFile(i)} className="absolute top-1.5 right-1.5 size-6 bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                        <X size={12} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                  </div>
+                </SortableContext>
+              </DndContext>
+            ) : (
+              <div className="flex flex-col items-center gap-2 py-4" style={{ color: "var(--color-muted-foreground)" }}>
+                <ImageIcon size={24} />
+                <p className="text-xs">Sin imágenes cargadas</p>
               </div>
             )}
 
@@ -335,13 +499,6 @@ export default function EditPropertyForm({ property }: { property: Property }) {
               </div>
               <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleNewFiles} className="hidden" />
             </div>
-
-            {(existingImages.length === 0 && newPreviews.length === 0) && (
-              <div className="flex flex-col items-center gap-2 py-4" style={{ color: "var(--color-muted-foreground)" }}>
-                <ImageIcon size={24} />
-                <p className="text-xs">Sin imágenes cargadas</p>
-              </div>
-            )}
           </div>
 
           {/* Características */}
