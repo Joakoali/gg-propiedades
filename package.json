@@ -13,6 +13,9 @@
     "cf-typegen": "wrangler types --env-interface CloudflareEnv"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@opennextjs/cloudflare": "^1.18.0",
     "@prisma/adapter-pg": "^7.6.0",
     "@prisma/client": "^7.5.0",
