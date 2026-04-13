@@ -39,3 +39,14 @@ export async function toggleFeatured(id: string, currentFeatured: boolean) {
 
   return { success: true };
 }
+
+export async function setFeaturedOrder(id: string, order: number | null) {
+  const db = supabase();
+  const { error } = await db
+    .from(TABLE)
+    .update({ featuredOrder: order })
+    .eq("id", id);
+
+  if (error) return { error: "Error al actualizar." };
+  return { success: true };
+}
