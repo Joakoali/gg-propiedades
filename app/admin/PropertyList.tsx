@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Pencil, Trash2, X, Star, Search, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toggleFeatured } from "@/app/actions/featured";
+import { toggleFeatured, setFeaturedOrder } from "@/app/actions/featured";
 import { CATEGORY_LABELS, MAX_FEATURED } from "@/app/lib/utils";
 
 interface Property {
@@ -18,6 +18,7 @@ interface Property {
   neighborhood: string | null;
   images: string[];
   featured: boolean;
+  featuredOrder: number | null;
   bedrooms: number | null;
 }
 
@@ -318,18 +319,45 @@ export default function PropertyList() {
                     <td className="px-4 py-3 text-sm" style={{ color: "var(--color-muted-foreground)" }}>{p.zone ?? "—"}</td>
 
                     <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => handleToggleFeatured(p)}
-                        disabled={isPending || !canMark}
-                        title={!canMark ? `Límite de ${MAX_FEATURED} alcanzado` : p.featured ? "Quitar destacada" : "Marcar como destacada"}
-                        className="inline-flex items-center justify-center size-8 rounded-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                        style={{
-                          background: p.featured ? "oklch(90% 0.08 75)" : "oklch(96% 0.004 260)",
-                          color: p.featured ? "oklch(50% 0.12 75)" : "oklch(65% 0.01 260)",
-                        }}
-                      >
-                        <Star size={14} fill={p.featured ? "currentColor" : "none"} />
-                      </button>
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          onClick={() => handleToggleFeatured(p)}
+                          disabled={isPending || !canMark}
+                          title={!canMark ? `Límite de ${MAX_FEATURED} alcanzado` : p.featured ? "Quitar destacada" : "Marcar como destacada"}
+                          className="inline-flex items-center justify-center size-8 rounded-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                          style={{
+                            background: p.featured ? "oklch(90% 0.08 75)" : "oklch(96% 0.004 260)",
+                            color: p.featured ? "oklch(50% 0.12 75)" : "oklch(65% 0.01 260)",
+                          }}
+                        >
+                          <Star size={14} fill={p.featured ? "currentColor" : "none"} />
+                        </button>
+                        {p.featured && (
+                          <input
+                            key={`${p.id}-${p.featuredOrder ?? ""}`}
+                            type="number"
+                            min={1}
+                            max={9}
+                            defaultValue={p.featuredOrder ?? ""}
+                            placeholder="—"
+                            title="Posición en hero (1–9)"
+                            onBlur={(e) => {
+                              const raw = e.target.value.trim();
+                              const val = raw === "" ? null : parseInt(raw, 10);
+                              if (val !== null && (isNaN(val) || val < 1 || val > 9)) return;
+                              startTransition(async () => {
+                                await setFeaturedOrder(p.id, val);
+                                queryClient.invalidateQueries({ queryKey: ["admin-properties"] });
+                              });
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                            }}
+                            className="w-10 text-center border rounded-lg px-1 py-1 text-xs focus:outline-none focus:ring-1"
+                            style={{ borderColor: "var(--color-border)" }}
+                          />
+                        )}
+                      </div>
                     </td>
 
                     <td className="px-4 py-3">
