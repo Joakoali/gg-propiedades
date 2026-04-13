@@ -9,7 +9,7 @@ import { formatPrice, CATEGORY_LABELS } from "@/app/lib/utils";
 import Gallery from "./Gallery";
 import ShareButton from "./ShareButton";
 
-export const revalidate = 3600; // Re-generar cada 1 hora
+export const revalidate = 60; // Re-generar cada 1 minuto
 
 // Pre-genera las páginas de propiedades destacadas en build time
 export async function generateStaticParams() {

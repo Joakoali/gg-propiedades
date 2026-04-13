@@ -1,4 +1,4 @@
-export const revalidate = 1800;
+export const revalidate = 60;
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import HeroCarousel from "@/app/components/HeroCarousel";
