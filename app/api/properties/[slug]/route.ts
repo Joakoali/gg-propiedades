@@ -113,6 +113,7 @@ export async function PUT(request: Request, { params }: Params) {
       financing: body.financing === true,
       mortgageEligible: body.mortgageEligible === true,
       featured: body.featured === true,
+      featuredOrder: body.featured === true ? safeInt(body.featuredOrder, 1, 9) : null,
     };
 
     if (title) updateData.title = title;

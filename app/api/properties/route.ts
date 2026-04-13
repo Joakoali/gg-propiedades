@@ -13,6 +13,7 @@ const ADMIN_PROPERTY_LIST_SELECT = [
   "neighborhood",
   "images",
   "featured",
+  "featuredOrder",
   "bedrooms",
 ].join(", ");
 
@@ -127,6 +128,7 @@ export async function POST(request: Request) {
       financing: body.financing === true,
       mortgageEligible: body.mortgageEligible === true,
       featured: body.featured === true,
+      featuredOrder: body.featured === true ? safeInt(body.featuredOrder, 1, 9) : null,
     };
 
     const { data, error } = await supabase()

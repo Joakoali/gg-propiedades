@@ -20,6 +20,7 @@ export interface Property {
   financing: boolean;
   mortgageEligible: boolean;
   featured: boolean;
+  featuredOrder: number | null;
   createdAt: string;
 }
 

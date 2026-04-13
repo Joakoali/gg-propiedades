@@ -181,6 +181,7 @@ export async function getHomeData() {
       .from(TABLE)
       .select(HOME_FEATURED_SELECT)
       .eq("featured", true)
+      .order("featuredOrder", { ascending: true, nullsFirst: false })
       .order("createdAt", { ascending: false })
       .limit(9),
     db.from(TABLE).select("id", { count: "exact", head: true }),
