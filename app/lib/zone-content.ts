@@ -1,9 +1,6 @@
 // Contenido de las páginas de zona (GEO / SEO local).
 // Los precios de propiedades se calcularon sobre el catálogo real publicado
 // en ggpropiedades.com/propiedades (julio 2026), filtrado por zona y categoría.
-// El único monto marcado [VALIDAR: ...] que queda es un dato legal/impositivo
-// (gastos de escritura) que no vive en nuestra base y debe confirmar el dueño
-// antes de publicar; el marcador es visible en la página a propósito.
 import type { Metadata } from "next";
 
 export const BASE_URL = "https://ggpropiedades.com";
@@ -311,11 +308,6 @@ export const ZONE_CONTENT: Record<ZoneKey, ZoneContent> = {
           "¿Cuánto cuesta entrar a un barrio cerrado en Zona Norte?",
         answer:
           "En el corredor Pilar–Escobar, según nuestro catálogo actual, los lotes arrancan alrededor de USD 25.000 y las casas de 3 dormitorios desde USD 120.000. En corredores más cercanos a Capital los valores de entrada son bastante más altos.",
-      },
-      {
-        question: "¿Qué gastos hay al comprar una propiedad en Buenos Aires?",
-        answer:
-          "Además del precio, hay que prever escritura y honorarios: en la provincia de Buenos Aires el total de gastos de compra suele rondar el [VALIDAR: 8% a 10%] del valor, según si es primera vivienda y cómo se instrumenta. Te lo detallamos operación por operación antes de reservar.",
       },
       {
         question: "¿Trabajan con compradores del exterior o de Capital?",
