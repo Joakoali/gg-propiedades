@@ -1,5 +1,8 @@
 // Contenido de las páginas de zona (GEO / SEO local).
-// Los montos marcados [VALIDAR: ...] deben ser confirmados por el dueño
+// Los precios de propiedades se calcularon sobre el catálogo real publicado
+// en ggpropiedades.com/propiedades (julio 2026), filtrado por zona y categoría.
+// El único monto marcado [VALIDAR: ...] que queda es un dato legal/impositivo
+// (gastos de escritura) que no vive en nuestra base y debe confirmar el dueño
 // antes de publicar; el marcador es visible en la página a propósito.
 import type { Metadata } from "next";
 
@@ -90,33 +93,33 @@ export const ZONE_CONTENT: Record<ZoneKey, ZoneContent> = {
       },
     ],
     pricingTitle: "Precios orientativos en Pilar",
-    pricingUpdated: "julio 2026",
+    pricingUpdated: "julio 2026, según publicaciones activas en nuestro catálogo",
     pricingRows: [
       {
         label: "Casa en barrio cerrado (3 dorm.)",
-        value: "[VALIDAR: desde USD 250.000 a USD 550.000]",
+        value: "entre USD 170.000 y USD 359.000",
       },
       {
         label: "Lote en barrio cerrado",
-        value: "[VALIDAR: desde USD 45.000 a USD 150.000]",
+        value: "entre USD 45.000 y USD 85.000",
       },
       {
-        label: "Expensas típicas de country",
-        value: "[VALIDAR: entre ARS 150.000 y ARS 450.000 mensuales]",
+        label: "Expensas de country o barrio cerrado",
+        value: "varían mucho según el barrio y sus servicios — consultanos por el valor exacto",
       },
     ],
     pricingNote:
-      "Los valores son orientativos y varían según barrio, superficie y estado de la propiedad. Pedinos una tasación gratuita para conocer el valor real de tu propiedad hoy.",
+      "Rangos calculados sobre nuestras propiedades publicadas en Pilar en julio 2026. Varían según barrio, superficie y estado de la propiedad. Pedinos una tasación gratuita para conocer el valor real de tu propiedad hoy.",
     faqs: [
       {
         question: "¿Cuánto cuesta una casa en un barrio cerrado de Pilar?",
         answer:
-          "Depende del barrio y la superficie: una casa de 3 dormitorios en un barrio cerrado de Pilar arranca en torno a [VALIDAR: USD 250.000] en barrios de primera vivienda y supera [VALIDAR: USD 500.000] en countrys consolidados. Los lotes para construir arrancan alrededor de [VALIDAR: USD 45.000].",
+          "Según nuestro catálogo actual, una casa de 3 dormitorios en un barrio cerrado de Pilar arranca en torno a USD 170.000 en barrios de primera vivienda y supera USD 350.000 en countrys consolidados. Los lotes para construir arrancan alrededor de USD 45.000.",
       },
       {
         question: "¿Qué expensas tiene un country o barrio cerrado en Pilar?",
         answer:
-          "Las expensas varían según los servicios del barrio (seguridad, deportes, club house). En Pilar los rangos típicos van de [VALIDAR: ARS 150.000 a ARS 450.000] por mes. Antes de comprar te detallamos la expensa exacta y qué incluye en cada barrio.",
+          "Las expensas varían mucho según los servicios del barrio (seguridad, deportes, club house), por eso no publicamos un monto único. Antes de comprar te detallamos la expensa exacta y qué incluye en cada barrio que te interese.",
       },
       {
         question: "¿Qué barrios cerrados de Pilar conviene mirar primero?",
@@ -196,28 +199,28 @@ export const ZONE_CONTENT: Record<ZoneKey, ZoneContent> = {
       },
     ],
     pricingTitle: "Precios orientativos en Escobar",
-    pricingUpdated: "julio 2026",
+    pricingUpdated: "julio 2026, según publicaciones activas en nuestro catálogo",
     pricingRows: [
       {
         label: "Casa en barrio cerrado (3 dorm.)",
-        value: "[VALIDAR: desde USD 220.000 a USD 500.000]",
+        value: "entre USD 120.000 y USD 485.000",
       },
       {
         label: "Lote en barrio cerrado",
-        value: "[VALIDAR: desde USD 40.000 a USD 130.000]",
+        value: "entre USD 25.000 y USD 226.000",
       },
       {
         label: "Expensas típicas",
-        value: "[VALIDAR: entre ARS 120.000 y ARS 400.000 mensuales]",
+        value: "varían mucho según el barrio y sus servicios — consultanos por el valor exacto",
       },
     ],
     pricingNote:
-      "Los valores son orientativos y varían según barrio, superficie y estado. Pedinos una tasación gratuita para conocer el valor real de tu propiedad.",
+      "Rangos calculados sobre nuestras propiedades publicadas en Escobar en julio 2026. Varían según barrio, superficie y estado. Pedinos una tasación gratuita para conocer el valor real de tu propiedad.",
     faqs: [
       {
         question: "¿Cuánto cuesta una casa en un barrio cerrado de Escobar?",
         answer:
-          "Una casa de 3 dormitorios en barrio cerrado de Escobar o Maschwitz suele ubicarse entre [VALIDAR: USD 220.000 y USD 500.000] según barrio y superficie. Los lotes para construir arrancan alrededor de [VALIDAR: USD 40.000], algo por debajo de los valores de Pilar.",
+          "Según nuestro catálogo actual, una casa de 3 dormitorios en barrio cerrado de Escobar o Maschwitz suele ubicarse entre USD 120.000 y USD 485.000 según barrio y superficie. Los lotes para construir arrancan alrededor de USD 25.000, con opciones de mayor superficie que superan los USD 200.000.",
       },
       {
         question: "¿Qué es Puertos y por qué se habla tanto de esa zona?",
@@ -283,19 +286,19 @@ export const ZONE_CONTENT: Record<ZoneKey, ZoneContent> = {
       },
     ],
     pricingTitle: "Precios orientativos en el corredor Pilar–Escobar",
-    pricingUpdated: "julio 2026",
+    pricingUpdated: "julio 2026, según publicaciones activas en nuestro catálogo",
     pricingRows: [
       {
         label: "Casa en barrio cerrado (3 dorm.)",
-        value: "[VALIDAR: desde USD 220.000 a USD 550.000]",
+        value: "entre USD 120.000 y USD 485.000",
       },
       {
         label: "Lote en barrio cerrado",
-        value: "[VALIDAR: desde USD 40.000 a USD 150.000]",
+        value: "entre USD 25.000 y USD 226.000",
       },
     ],
     pricingNote:
-      "Los valores varían según partido y barrio: en las guías de Pilar y Escobar hay rangos más precisos por zona. Tasamos gratis tu propiedad con valores reales de cierre.",
+      "Rangos calculados sobre nuestro catálogo publicado en Pilar y Escobar en julio 2026 y varían según partido y barrio: en las guías de Pilar y Escobar hay rangos más precisos por zona. Tasamos gratis tu propiedad con valores reales de cierre.",
     faqs: [
       {
         question:
@@ -307,7 +310,7 @@ export const ZONE_CONTENT: Record<ZoneKey, ZoneContent> = {
         question:
           "¿Cuánto cuesta entrar a un barrio cerrado en Zona Norte?",
         answer:
-          "En el corredor Pilar–Escobar, los lotes arrancan alrededor de [VALIDAR: USD 40.000] y las casas de 3 dormitorios desde [VALIDAR: USD 220.000]. En corredores más cercanos a Capital los valores de entrada son bastante más altos.",
+          "En el corredor Pilar–Escobar, según nuestro catálogo actual, los lotes arrancan alrededor de USD 25.000 y las casas de 3 dormitorios desde USD 120.000. En corredores más cercanos a Capital los valores de entrada son bastante más altos.",
       },
       {
         question: "¿Qué gastos hay al comprar una propiedad en Buenos Aires?",
