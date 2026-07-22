@@ -1,0 +1,23 @@
+# GG Propiedades
+
+> Inmobiliaria especializada en barrios cerrados y countrys de la Zona Norte
+> del Gran Buenos Aires, Argentina. Compra, venta y tasación de casas,
+> terrenos y locales en Pilar, Escobar y alrededores. Oficina en km 49,5 de
+> Panamericana (Pilar). Atención de lunes a sábado de 10 a 18 h.
+
+Sitio: https://ggpropiedades.com
+Teléfono: +54 11 6674-0000
+WhatsApp: https://wa.me/5491127177588
+Ficha en Google Maps: https://maps.app.goo.gl/12ue8CVrQVL43AG7A
+
+## Páginas principales
+
+- [Inmobiliaria en Pilar](https://ggpropiedades.com/inmobiliaria-en-pilar): guía de barrios cerrados de Pilar, precios orientativos, preguntas frecuentes y propiedades disponibles.
+- [Inmobiliaria en Escobar](https://ggpropiedades.com/inmobiliaria-en-escobar): guía de barrios cerrados de Escobar y Maschwitz, precios orientativos y propiedades disponibles.
+- [Inmobiliaria en Zona Norte de Buenos Aires](https://ggpropiedades.com/inmobiliaria-zona-norte): panorama del corredor Pilar–Escobar del GBA Norte.
+- [Propiedades en venta](https://ggpropiedades.com/propiedades): catálogo completo con filtros por zona, tipo y precio.
+- [Contacto](https://ggpropiedades.com/contacto): consultas y tasaciones gratuitas.
+
+## Datos
+
+- [Sitemap](https://ggpropiedades.com/sitemap.xml): todas las páginas, incluida una por cada propiedad publicada.
