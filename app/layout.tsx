@@ -74,7 +74,9 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    // Cuando tengas Google Search Console, agregar: google: "tu-código-verificación"
+    // Pegar los códigos al registrar el sitio (ver docs/guia-visibilidad-ia.md):
+    // google: "CODIGO-GOOGLE-SEARCH-CONSOLE",
+    // other: { "msvalidate.01": "CODIGO-BING-WEBMASTER" },
   },
 };
 
@@ -91,6 +93,34 @@ export default function RootLayout({
     logo: `${BASE_URL}/logo.png`,
     description:
       "Inmobiliaria especializada en barrios cerrados y countrys de Zona Norte del GBA.",
+    telephone: "+54 11 6674-0000",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress:
+        "Colectora Acceso Norte km 49,5, Edificio Concord Rubí, Of. 302",
+      addressLocality: "La Lonja, Pilar",
+      postalCode: "B1629",
+      addressRegion: "Buenos Aires",
+      addressCountry: "AR",
+    },
+    openingHoursSpecification: {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ],
+      opens: "10:00",
+      closes: "18:00",
+    },
+    sameAs: [
+      "https://www.facebook.com/GGPropiedades.Mariana/",
+      "https://www.instagram.com/gg.propiedades/",
+    ],
+    hasMap: "https://maps.app.goo.gl/12ue8CVrQVL43AG7A",
     areaServed: {
       "@type": "GeoCircle",
       geoMidpoint: {
@@ -100,14 +130,9 @@ export default function RootLayout({
       },
       geoRadius: "30000",
     },
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Pilar",
-      addressRegion: "Buenos Aires",
-      addressCountry: "AR",
-    },
     contactPoint: {
       "@type": "ContactPoint",
+      telephone: "+54 11 6674-0000",
       email: "info@ggpropiedades.com",
       contactType: "sales",
       availableLanguage: "Spanish",
