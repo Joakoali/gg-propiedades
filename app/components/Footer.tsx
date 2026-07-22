@@ -24,12 +24,12 @@ const SOCIAL = [
   },
   {
     icon: FaInstagram,
-    href: "https://instagram.com/gg.propiedades",
+    href: "https://www.instagram.com/gg.propiedades/",
     label: "Instagram",
   },
   {
     icon: FaFacebook,
-    href: "https://www.facebook.com/GGPropiedades.Mariana",
+    href: "https://www.facebook.com/GGPropiedades.Mariana/",
     label: "Facebook",
   },
 ];

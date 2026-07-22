@@ -336,7 +336,7 @@ export function zoneMetadata(key: ZoneKey): Metadata {
   const zone = ZONE_CONTENT[key];
   const url = `${BASE_URL}/${zone.slug}`;
   return {
-    title: zone.metaTitle,
+    title: { absolute: zone.metaTitle },
     description: zone.metaDescription,
     alternates: { canonical: url },
     openGraph: {
