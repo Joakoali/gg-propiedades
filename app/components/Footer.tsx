@@ -16,6 +16,12 @@ const SITE_LINKS = [
   { label: "Contacto", href: "/contacto" },
 ];
 
+const LEGAL_LINKS = [
+  { label: "Aviso Legal", href: "/aviso-legal" },
+  { label: "Política de Privacidad", href: "/politica-de-privacidad" },
+  { label: "Política de Cookies", href: "/politica-de-cookies" },
+  { label: "Términos y Condiciones", href: "/terminos-y-condiciones" },
+];
 const SOCIAL = [
   {
     icon: FaWhatsapp,
@@ -40,15 +46,29 @@ export default function Footer() {
       className="text-white"
       style={{ background: "var(--color-primary)" }}
     >
+      {/* Hairline dorada que separa el footer del cuerpo */}
+      <div
+        aria-hidden="true"
+        className="h-px w-full"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent, var(--color-gold) 20%, var(--color-gold) 80%, transparent)",
+          opacity: 0.55,
+        }}
+      />
       <div className="section-container py-14">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {/* NAP */}
           <div className="flex flex-col gap-3">
             <p className="font-display text-lg font-bold">GG Propiedades</p>
             <p className="text-sm text-white/70 leading-relaxed flex items-start gap-2">
-              <MapPin size={15} className="shrink-0 mt-0.5" style={{ color: "var(--color-gold)" }} />
-              Colectora Acceso Norte km 49,5, Edificio Concord Rubí, Of. 302,
-              La Lonja, Pilar, Buenos Aires
+              <MapPin
+                size={15}
+                className="shrink-0 mt-0.5"
+                style={{ color: "var(--color-gold)" }}
+              />
+              Colectora Acceso Norte km 49,5, Edificio Concord Rubí, Of. 302, La
+              Lonja, Pilar, Buenos Aires
             </p>
             <a
               href="tel:+541166740000"
@@ -113,6 +133,27 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
+          </div>
+          {/* Legal */}
+          <div>
+            <nav aria-label="Enlaces legales">
+              <ul className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-white/50">
+                {LEGAL_LINKS.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="hover:text-white transtition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <p className="text-xs text-white/40">
+              © {new Date().getFullYear()} GG Propiedades · Inmobiliaria en
+              Pilar, Escobar y Zona Norte del GBA
+            </p>
           </div>
         </div>
 

@@ -112,8 +112,8 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
           ) : (
             <div className="w-full h-full bg-[--color-primary]" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-r from-black/75 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
         </div>
       ))}
 

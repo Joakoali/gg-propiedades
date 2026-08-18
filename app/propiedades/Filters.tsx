@@ -159,7 +159,7 @@ export default function Filters({ zones, currentCategory, currentZone }: Filters
           <select
             value={current.zone}
             onChange={(e) => push({ zone: e.target.value })}
-            className={`${selectClass} pr-8 md:min-w-[160px]`}
+            className={`${selectClass} pr-8 md:min-w-40`}
             style={{ borderColor: current.zone ? "var(--color-gold)" : "var(--color-border)" }}
           >
             <option value="">Todas las zonas</option>
@@ -173,7 +173,7 @@ export default function Filters({ zones, currentCategory, currentZone }: Filters
           <select
             value={current.sort}
             onChange={(e) => push({ sort: e.target.value })}
-            className={`${selectClass} pr-8 md:min-w-[150px]`}
+            className={`${selectClass} pr-8 md:min-w-37.5`}
             style={{ borderColor: current.sort ? "var(--color-gold)" : "var(--color-border)" }}
           >
             {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}

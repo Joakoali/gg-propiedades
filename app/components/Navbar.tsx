@@ -88,7 +88,7 @@ export default function Navbar() {
         }}
       >
         <div className="section-container">
-          <div className="flex items-center justify-between h-16 lg:h-[72px]">
+          <div className="flex items-center justify-between h-16 lg:h-18">
             <Link href="/" className="flex items-center select-none">
               <Image
                 src={transparent ? NAVBAR_LOGOS.light : NAVBAR_LOGOS.dark}
@@ -96,7 +96,7 @@ export default function Navbar() {
                 width={210}
                 height={68}
                 priority
-                className="h-14 w-auto sm:h-16 lg:h-[72px] transition-opacity duration-300"
+                className="h-14 w-auto sm:h-16 lg:h-18 transition-opacity duration-300"
               />
             </Link>
 

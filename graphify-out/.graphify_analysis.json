@@ -1,0 +1,469 @@
+{
+  "communities": {
+    "0": [
+      "app_components_herocarousel",
+      "app_components_herocarousel_category_labels",
+      "app_components_herocarousel_featuredproperty",
+      "app_components_herocarousel_herocarousel",
+      "app_components_herocarousel_herocarouselprops",
+      "app_components_propertycard",
+      "app_components_propertycard_propertycard",
+      "app_components_propertycard_propertycarddata",
+      "app_components_propertycard_props",
+      "app_lib_public_properties",
+      "app_lib_public_properties_applysort",
+      "app_lib_public_properties_category",
+      "app_lib_public_properties_cleanquery",
+      "app_lib_public_properties_cleantext",
+      "app_lib_public_properties_filterquery_order",
+      "app_lib_public_properties_gethomedata",
+      "app_lib_public_properties_getpropertylist",
+      "app_lib_public_properties_getpropertyslugs",
+      "app_lib_public_properties_home_featured_select",
+      "app_lib_public_properties_normalizedfilters",
+      "app_lib_public_properties_normalizepublicfilters",
+      "app_lib_public_properties_parsepositiveint",
+      "app_lib_public_properties_parsepositivenumber",
+      "app_lib_public_properties_property_card_select",
+      "app_lib_public_properties_publicpropertyfilters",
+      "app_lib_public_properties_sort",
+      "app_lib_utils",
+      "app_lib_utils_category_labels",
+      "app_lib_utils_cross_zone_neighborhoods",
+      "app_lib_utils_formatprice",
+      "app_lib_utils_zone_filter_map",
+      "app_page",
+      "app_page_featuredpropertycard",
+      "app_page_features",
+      "app_page_homepage",
+      "app_propiedades_page",
+      "app_propiedades_page_metadata",
+      "app_propiedades_page_pageprops",
+      "app_propiedades_page_propiedadespage",
+      "app_sitemap",
+      "app_sitemap_sitemap"
+    ],
+    "1": [
+      "app_actions_featured",
+      "app_actions_featured_setfeaturedorder",
+      "app_actions_featured_togglefeatured",
+      "app_admin_page",
+      "app_admin_page_adminpage",
+      "app_admin_properties_slug_edit_page",
+      "app_admin_properties_slug_edit_page_editpropertypage",
+      "app_admin_properties_slug_edit_page_props",
+      "app_admin_propertylist",
+      "app_admin_propertylist_deletedialog",
+      "app_admin_propertylist_property",
+      "app_admin_propertylist_propertylist",
+      "app_admin_propertylist_sortdir",
+      "app_admin_propertylist_sortheader",
+      "app_admin_propertylist_sortkey",
+      "app_lib_db",
+      "app_lib_db_category",
+      "app_lib_db_property",
+      "app_lib_db_supabase",
+      "app_lib_public_properties_getpropertybyslug",
+      "app_propiedades_slug_gallery",
+      "app_propiedades_slug_gallery_gallery",
+      "app_propiedades_slug_gallery_galleryprops",
+      "app_propiedades_slug_page",
+      "app_propiedades_slug_page_generatemetadata",
+      "app_propiedades_slug_page_generatestaticparams",
+      "app_propiedades_slug_page_propertydetailpage",
+      "app_propiedades_slug_page_props",
+      "app_propiedades_slug_sharebutton",
+      "app_propiedades_slug_sharebutton_props",
+      "app_propiedades_slug_sharebutton_sharebutton"
+    ],
+    "2": [
+      "dnd_kit_core",
+      "dnd_kit_sortable",
+      "dnd_kit_utilities",
+      "lucide_react",
+      "next",
+      "next_auth",
+      "opennextjs_cloudflare",
+      "package_dependencies",
+      "package_dependencies_dnd_kit_core",
+      "package_dependencies_dnd_kit_sortable",
+      "package_dependencies_dnd_kit_utilities",
+      "package_dependencies_lucide_react",
+      "package_dependencies_next",
+      "package_dependencies_next_auth",
+      "package_dependencies_opennextjs_cloudflare",
+      "package_dependencies_prisma_adapter_pg",
+      "package_dependencies_prisma_client",
+      "package_dependencies_react",
+      "package_dependencies_react_dom",
+      "package_dependencies_react_icons",
+      "package_dependencies_supabase_supabase_js",
+      "package_dependencies_tanstack_react_query",
+      "prisma_adapter_pg",
+      "prisma_client",
+      "react",
+      "react_dom",
+      "react_icons",
+      "supabase_supabase_js",
+      "tanstack_react_query"
+    ],
+    "3": [
+      "ref_dom",
+      "ref_dom_iterable",
+      "ref_esnext",
+      "ref_mts",
+      "ref_next_dev_types_ts",
+      "ref_next_env_d_ts",
+      "ref_next_types_ts",
+      "ref_node_modules",
+      "ref_ts",
+      "ref_tsx",
+      "tsconfig",
+      "tsconfig_compileroptions",
+      "tsconfig_compileroptions_allowjs",
+      "tsconfig_compileroptions_esmoduleinterop",
+      "tsconfig_compileroptions_incremental",
+      "tsconfig_compileroptions_isolatedmodules",
+      "tsconfig_compileroptions_jsx",
+      "tsconfig_compileroptions_lib",
+      "tsconfig_compileroptions_module",
+      "tsconfig_compileroptions_moduleresolution",
+      "tsconfig_compileroptions_noemit",
+      "tsconfig_compileroptions_paths",
+      "tsconfig_compileroptions_plugins",
+      "tsconfig_compileroptions_resolvejsonmodule",
+      "tsconfig_compileroptions_skiplibcheck",
+      "tsconfig_compileroptions_strict",
+      "tsconfig_compileroptions_target",
+      "tsconfig_exclude",
+      "tsconfig_include"
+    ],
+    "4": [
+      "dotenv",
+      "eslint",
+      "eslint_config_next",
+      "package_devdependencies",
+      "package_devdependencies_dotenv",
+      "package_devdependencies_eslint",
+      "package_devdependencies_eslint_config_next",
+      "package_devdependencies_prisma",
+      "package_devdependencies_tailwindcss",
+      "package_devdependencies_tailwindcss_postcss",
+      "package_devdependencies_types_node",
+      "package_devdependencies_types_react",
+      "package_devdependencies_types_react_dom",
+      "package_devdependencies_typescript",
+      "package_devdependencies_wrangler",
+      "prisma",
+      "tailwindcss",
+      "tailwindcss_postcss",
+      "types_node",
+      "types_react",
+      "types_react_dom",
+      "typescript",
+      "wrangler"
+    ],
+    "5": [
+      "app_admin_properties_new_page",
+      "app_admin_properties_new_page_newpropertypage",
+      "app_admin_properties_new_page_photoitem",
+      "app_admin_properties_new_page_sortablephoto",
+      "app_admin_properties_slug_edit_editpropertyform",
+      "app_admin_properties_slug_edit_editpropertyform_displayitem",
+      "app_admin_properties_slug_edit_editpropertyform_editpropertyform",
+      "app_admin_properties_slug_edit_editpropertyform_existingitem",
+      "app_admin_properties_slug_edit_editpropertyform_newitem",
+      "app_admin_properties_slug_edit_editpropertyform_property",
+      "app_admin_properties_slug_edit_editpropertyform_sortablephoto",
+      "app_lib_image_utils",
+      "app_lib_image_utils_compressimage",
+      "app_lib_image_utils_compressimages",
+      "app_lib_image_utils_presignedfile",
+      "app_lib_image_utils_uploadwithpresignedurls",
+      "app_lib_utils_zones"
+    ],
+    "6": [
+      "app_api_auth_nextauth_route",
+      "app_api_auth_nextauth_route_handler",
+      "app_api_properties_slug_route",
+      "app_api_properties_slug_route_allowed_image_hosts",
+      "app_api_properties_slug_route_delete",
+      "app_api_properties_slug_route_isvalidimageurl",
+      "app_api_properties_slug_route_params",
+      "app_api_properties_slug_route_put",
+      "app_api_properties_slug_route_revalidatepublicpropertydata",
+      "app_api_properties_slug_route_safeint",
+      "app_api_properties_slug_route_unauthorized",
+      "app_api_properties_slug_route_valid_categories",
+      "app_lib_auth_options",
+      "app_lib_auth_options_authoptions"
+    ],
+    "7": [
+      "app_api_upload_presign_route",
+      "app_api_upload_presign_route_allowed_types",
+      "app_api_upload_presign_route_filerequest",
+      "app_api_upload_presign_route_post",
+      "app_lib_r2",
+      "app_lib_r2_derivesigningkey",
+      "app_lib_r2_enc",
+      "app_lib_r2_encodepath",
+      "app_lib_r2_generatepresignedputurl",
+      "app_lib_r2_getsigningkey",
+      "app_lib_r2_hmacsha256",
+      "app_lib_r2_importhmackey",
+      "app_lib_r2_sha256hex",
+      "app_lib_r2_tohex"
+    ],
+    "8": [
+      "package",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_cf_typegen",
+      "package_scripts_deploy",
+      "package_scripts_dev",
+      "package_scripts_lint",
+      "package_scripts_postinstall",
+      "package_scripts_preview",
+      "package_scripts_start",
+      "package_version"
+    ],
+    "9": [
+      "app_components_navbar",
+      "app_components_navbar_categories",
+      "app_components_navbar_navbar",
+      "app_components_navbar_navbar_logos",
+      "app_components_navbar_social",
+      "app_components_providers",
+      "app_components_providers_providers",
+      "app_layout",
+      "app_layout_geistsans",
+      "app_layout_metadata",
+      "app_layout_playfair",
+      "app_layout_rootlayout"
+    ],
+    "10": [
+      "app_api_properties_route",
+      "app_api_properties_route_admin_property_list_select",
+      "app_api_properties_route_allowed_image_hosts",
+      "app_api_properties_route_get",
+      "app_api_properties_route_isvalidimageurl",
+      "app_api_properties_route_post",
+      "app_api_properties_route_revalidatepublicpropertydata",
+      "app_api_properties_route_safeint",
+      "app_api_properties_route_unauthorized",
+      "app_api_properties_route_valid_categories",
+      "app_lib_db_generateid"
+    ],
+    "11": [
+      "app_contacto_contactform",
+      "app_contacto_contactform_contactform",
+      "app_contacto_contactform_status",
+      "app_contacto_page",
+      "app_contacto_page_contact_info",
+      "app_contacto_page_contactopage",
+      "app_contacto_page_metadata",
+      "app_contacto_page_social_links"
+    ],
+    "12": [
+      "app_lib_public_properties_applyfilters",
+      "app_lib_public_properties_filterquery",
+      "app_lib_public_properties_filterquery_eq",
+      "app_lib_public_properties_filterquery_gte",
+      "app_lib_public_properties_filterquery_ilike",
+      "app_lib_public_properties_filterquery_lte",
+      "app_lib_public_properties_filterquery_or",
+      "app_lib_public_properties_filterquery_range"
+    ],
+    "13": [
+      "app_api_contact_route",
+      "app_api_contact_route_esc",
+      "app_api_contact_route_isratelimited",
+      "app_api_contact_route_post",
+      "app_api_contact_route_ratelimitmap",
+      "app_api_contact_route_sendemail"
+    ],
+    "14": [
+      "app_propiedades_filters",
+      "app_propiedades_filters_bedrooms_options",
+      "app_propiedades_filters_categories",
+      "app_propiedades_filters_filters",
+      "app_propiedades_filters_filtersprops",
+      "app_propiedades_filters_sort_options"
+    ],
+    "15": [
+      "app_admin_login_page",
+      "app_admin_login_page_loginpage"
+    ],
+    "16": [
+      "app_not_found",
+      "app_not_found_notfound"
+    ],
+    "17": [
+      "app_propiedades_loading",
+      "app_propiedades_loading_loading"
+    ],
+    "18": [
+      "app_robots",
+      "app_robots_robots"
+    ],
+    "19": [
+      "eslint_config",
+      "eslint_config_eslintconfig"
+    ],
+    "20": [
+      "next_config",
+      "next_config_nextconfig"
+    ],
+    "21": [
+      "postcss_config",
+      "postcss_config_config"
+    ],
+    "22": [
+      "open_next_config"
+    ],
+    "23": [
+      "prisma_config"
+    ]
+  },
+  "cohesion": {
+    "0": 0.08414634146341464,
+    "1": 0.0967741935483871,
+    "2": 0.06896551724137931,
+    "3": 0.06896551724137931,
+    "4": 0.08695652173913043,
+    "5": 0.16176470588235295,
+    "6": 0.23076923076923078,
+    "7": 0.27472527472527475,
+    "8": 0.15384615384615385,
+    "9": 0.18181818181818182,
+    "10": 0.2909090909090909,
+    "11": 0.25,
+    "12": 0.39285714285714285,
+    "13": 0.5333333333333333,
+    "14": 0.3333333333333333,
+    "15": 1.0,
+    "16": 1.0,
+    "17": 1.0,
+    "18": 1.0,
+    "19": 1.0,
+    "20": 1.0,
+    "21": 1.0,
+    "22": 1.0,
+    "23": 1.0
+  },
+  "gods": [
+    {
+      "id": "app_lib_db_supabase",
+      "label": "supabase()",
+      "degree": 19
+    },
+    {
+      "id": "tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "degree": 16
+    },
+    {
+      "id": "package_scripts",
+      "label": "scripts",
+      "degree": 9
+    },
+    {
+      "id": "app_lib_public_properties_filterquery",
+      "label": "FilterQuery",
+      "degree": 8
+    },
+    {
+      "id": "app_lib_r2_generatepresignedputurl",
+      "label": "generatePresignedPutUrl()",
+      "degree": 8
+    },
+    {
+      "id": "app_api_properties_route_post",
+      "label": "POST()",
+      "degree": 7
+    },
+    {
+      "id": "app_lib_public_properties_applyfilters",
+      "label": "applyFilters()",
+      "degree": 7
+    },
+    {
+      "id": "app_lib_public_properties_getpropertylist",
+      "label": "getPropertyList()",
+      "degree": 7
+    },
+    {
+      "id": "app_lib_utils_formatprice",
+      "label": "formatPrice()",
+      "degree": 7
+    },
+    {
+      "id": "tsconfig_include",
+      "label": "include",
+      "degree": 7
+    }
+  ],
+  "surprises": [
+    {
+      "source": "EditPropertyPage()",
+      "target": "supabase()",
+      "source_files": [
+        "app/admin/properties/[slug]/edit/page.tsx",
+        "app/lib/db.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "peripheral node `EditPropertyPage()` unexpectedly reaches hub `supabase()`"
+    },
+    {
+      "source": "DELETE()",
+      "target": "supabase()",
+      "source_files": [
+        "app/api/properties/[slug]/route.ts",
+        "app/lib/db.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "PUT()",
+      "target": "supabase()",
+      "source_files": [
+        "app/api/properties/[slug]/route.ts",
+        "app/lib/db.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "GET()",
+      "target": "supabase()",
+      "source_files": [
+        "app/api/properties/route.ts",
+        "app/lib/db.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "POST()",
+      "target": "supabase()",
+      "source_files": [
+        "app/api/properties/route.ts",
+        "app/lib/db.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    }
+  ],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}
